@@ -1,0 +1,38 @@
+<map version="freeplane 1.3.0">
+<!--To view this file, download free mind mapping software Freeplane from http://freeplane.sourceforge.net -->
+<node TEXT="New Mindmap" ID="ID_362163987" CREATED="1459929698136" MODIFIED="1459929698136"><hook NAME="MapStyle">
+
+<map_styles>
+<stylenode LOCALIZED_TEXT="styles.root_node">
+<stylenode LOCALIZED_TEXT="styles.predefined" POSITION="right">
+<stylenode LOCALIZED_TEXT="default" COLOR="#000000" STYLE="fork" MAX_WIDTH="600">
+<font NAME="SansSerif" SIZE="12" BOLD="false" ITALIC="false"/>
+<edge STYLE="bezier" COLOR="#808080" WIDTH="1"/>
+</stylenode>
+<stylenode LOCALIZED_TEXT="defaultstyle.details"/>
+<stylenode LOCALIZED_TEXT="defaultstyle.note"/>
+<stylenode LOCALIZED_TEXT="defaultstyle.floating">
+<edge STYLE="hide_edge"/>
+<cloud COLOR="#f0f0f0" SHAPE="ROUND_RECT"/>
+</stylenode>
+</stylenode>
+</stylenode>
+</map_styles>
+</hook>
+<attribute NAME="nodeType" VALUE="dynamic_root"/>
+<attribute NAME="natures" VALUE="mainModel,configRepository,metamodel,downloadableLib,arduinoCppLib"/>
+<attribute NAME="configRepositorySets" VALUE="configRepository,arduinoCppLib"/>
+<attribute NAME="targetConfigRepositorySets" VALUE="htmlUiLibs"/>
+<node TEXT="" POSITION="right" ID="ID_37952720" CREATED="1459929698168" MODIFIED="1459929698168">
+<attribute NAME="nodeType" VALUE="metamodel"/>
+</node>
+<node TEXT="" POSITION="right" ID="ID_1565883438" CREATED="1459929698174" MODIFIED="1459929698174">
+<attribute NAME="nodeType" VALUE="srcDir"/>
+<attribute NAME="name" VALUE="lib-src"/>
+<attribute NAME="technologies" VALUE="cpp"/>
+<attribute NAME="sync" VALUE="true" OBJECT="java.lang.Boolean|true"/>
+<attribute NAME="childrenConflict" VALUE="false" OBJECT="java.lang.Boolean|false"/>
+<attribute NAME="childrenSync" VALUE="true" OBJECT="java.lang.Boolean|true"/>
+</node>
+</node>
+</map>

@@ -1,0 +1,4 @@
+useNewTemplates = true
+root = dynamic_fparduino__ui
+label = html
+gen_files = index.html:htmlRoot

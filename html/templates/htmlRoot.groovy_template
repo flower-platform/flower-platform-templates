@@ -1,0 +1,77 @@
+<%
+	generationSession.scope.put("utils", new org.flowerplatform.codesync.template_new.TemplateUtils(generationSession) {
+		
+		def replacementAlgo(nodeUri) {
+			String output = " ";
+			for (child in nodeService.getChildren(nodeUri, null)) {
+				genericDescriptors = behaviorRegistry.getAdditiveControllers("componentTemplate", child);
+				String pattern = '\\$fp\\.((?:\\w|_| )*)';
+				if(genericDescriptors == null)
+					output;
+				String result = org.flowerplatform.util.Utils.replaceRegEx(genericDescriptors[0].value, java.util.regex.Pattern.compile(pattern), new org.flowerplatform.util.RunnableWithParam<String, java.util.regex.Matcher>() {
+					public String run(java.util.regex.Matcher param) {
+						String nodePropertyName  = param.group(1);
+						if(nodePropertyName.equals("children")){
+							return replacementAlgo(child.getNodeUri());
+						}
+						replacement =  child.getPropertyValue(nodePropertyName);
+						replacement = (replacement != null ? replacement : "");
+						return  replacement;
+					}
+							
+				});
+				output += result;		
+			}
+			output;
+		}
+	});
+%>
+<!DOCTYPE html>
+<html ng-app="uiGen">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.2/ui-bootstrap-tpls.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://bootswatch.com/paper/bootstrap.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <style>
+        .horiz > * {
+            display: inline-block;
+            white-space: nowrap;
+			margin-top: 5px;
+			margin-right: 5px;
+        }
+        
+		.horiz  {
+            display: inline-block;
+            white-space: nowrap;
+        }
+        
+        .vert > * {
+            display: table;
+            white-space: normal;
+        }
+		
+		<!-- added temporarily to fix imbrications of horizontal into vertical boxes--->
+		.vert > .horiz {
+            display: inline-block;
+            white-space: nowrap;
+        }
+        
+        .content {
+            font-size: 21px;
+            font-weight: 300;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body class="content">
+    <%
+	String htmlOutput = utils.replacementAlgo(node.getNodeUri());
+	out.println(htmlOutput);
+%>
+</body>
+</html>
