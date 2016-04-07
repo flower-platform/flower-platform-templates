@@ -5,7 +5,7 @@
 			String output = " ";
 			for (child in nodeService.getChildren(nodeUri, null)) {
 				genericDescriptors = behaviorRegistry.getAdditiveControllers("componentTemplate", child);
-				String pattern = '\\$fp\\.((?:\\w|_| )*)';
+				String pattern = '\\$fp\\.((?:\\w|_| )*)';				
 				if(genericDescriptors == null)
 					output;
 				String result = org.flowerplatform.util.Utils.replaceRegEx(genericDescriptors[0].value, java.util.regex.Pattern.compile(pattern), new org.flowerplatform.util.RunnableWithParam<String, java.util.regex.Matcher>() {
@@ -15,8 +15,18 @@
 							return replacementAlgo(child.getNodeUri());
 						}
 						replacement =  child.getPropertyValue(nodePropertyName);
-						replacement = (replacement != null ? replacement : "");
-						return  replacement;
+						if(replacement != null){
+							String pattern2 = '\\{((?:\\w|_| )*)\\}';
+							replacement = org.flowerplatform.util.Utils.replaceRegEx(replacement, java.util.regex.Pattern.compile(pattern2), new org.flowerplatform.util.RunnableWithParam<String, java.util.regex.Matcher>() {
+								public String run(java.util.regex.Matcher parameter) {
+									String toReplace  = parameter.group(1).replace('{','').replace('}','');
+									replacement = "{{status." + toReplace + "}}"
+								}							
+							});
+							return  replacement;
+						}else{
+							return " ";
+						}
 					}
 							
 				});
@@ -32,43 +42,66 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.2/ui-bootstrap-tpls.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://bootswatch.com/paper/bootstrap.min.css">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <style>
-        .horiz > * {
-            display: inline-block;
-            white-space: nowrap;
-			margin-top: 5px;
-			margin-right: 5px;
-        }
-        
-		.horiz  {
-            display: inline-block;
-            white-space: nowrap;
-        }
-        
-        .vert > * {
-            display: table;
-            white-space: normal;
-        }
-		
-		<!-- added temporarily to fix imbrications of horizontal into vertical boxes--->
-		.vert > .horiz {
-            display: inline-block;
-            white-space: nowrap;
-        }
-        
+         .horiz > *{
+			 display: inline-block;
+			 white-space: nowrap;
+			 margin-bottom: 5px;
+			 margin-top: 5px;
+         }
+		 
+         .vert > *{
+			display: table;
+			white-space: normal;
+			 margin-bottom: 5px;
+			 margin-top: 5px;
+         } 
         .content {
             font-size: 21px;
             font-weight: 300;
             line-height: 1.4;
         }
     </style>
+	
+	<script>
+        var uigen = angular.module("uiGen", ['ui.bootstrap']);
+        uigen.controller("UiGenCtrl", ['\$scope', '\$http', '\$interval', '\$location', function(\$scope, \$http, \$interval, \$location) {
+            var boardUrl = (\$location.search().boardUrl != undefined ? \$location.search().boardUrl : "");
+			var statusUrl, descriptorsUrl;
+			\$scope.status = {};
+			
+			if(boardUrl != ""){
+				statusUrl = 'http://' + boardUrl + '/getState';				
+			}else{
+				statusUrl = "getStatus";
+			}
+			
+			var getDescriptorsValues = function(status){
+				\$scope.status = status;
+			}
+            var checkStatus = function() {
+                \$http.get(statusUrl).success(function(response) {
+					getDescriptorsValues(response);
+                })
+            };
+            //\$interval(checkStatus, 1000);
+			
+			checkStatus();
+						
+            \$scope.invoke = function(path, successHandler, errorHandler) {
+                \$http.get("http://" + boardUrl +"/" + path).success(function(response) {
+					getDescriptorsValues(response);
+                });
+            }
+        }]);
+    </script>
 </head>
 
-<body class="content">
+<body class="content" ng-controller="UiGenCtrl">
     <%
 	String htmlOutput = utils.replacementAlgo(node.getNodeUri());
 	out.println(htmlOutput);
