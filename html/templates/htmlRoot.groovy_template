@@ -50,16 +50,22 @@
          .horiz > *{
 			 display: inline-block;
 			 white-space: nowrap;
-			 margin-bottom: 5px;
-			 margin-top: 5px;
+			 margin: 0px;
          }
 		 
          .vert > *{
 			display: table;
 			white-space: normal;
-			 margin-bottom: 5px;
-			 margin-top: 5px;
-         } 
+			margin: 0px;
+         }
+
+		.vert{
+			vertical-align: top;
+		}
+			
+		.horiz{
+			vertical-align: top;
+		}		 
         .content {
             font-size: 21px;
             font-weight: 300;
