@@ -26,251 +26,239 @@
 <node TEXT="" POSITION="right" ID="ID_1145346561" CREATED="1459930345605" MODIFIED="1459930345605">
 <attribute NAME="nodeType" VALUE="metamodel"/>
 <attribute NAME="prefix" VALUE="fparduino"/>
-<node TEXT="" ID="ID_439235239" CREATED="1460045424616" MODIFIED="1460045424616">
+<node TEXT="" ID="ID_856643893" CREATED="1460127878535" MODIFIED="1460127878535">
 <attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
 <attribute NAME="name" VALUE="ui"/>
-<node TEXT="" ID="ID_1685987773" CREATED="1460045424618" MODIFIED="1460045424618">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="vbox"/>
-</node>
-<node TEXT="" ID="ID_1377872107" CREATED="1460045424619" MODIFIED="1460045424619">
+<node TEXT="" ID="ID_821852595" CREATED="1460127878538" MODIFIED="1460127878538">
 <attribute NAME="nodeType" VALUE="addChildDescriptor"/>
 <attribute NAME="childType" VALUE="hbox"/>
 </node>
-<node TEXT="" ID="ID_1591018364" CREATED="1460045424621" MODIFIED="1460045424621">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="paragraph"/>
-</node>
-<node TEXT="" ID="ID_637612562" CREATED="1460045424622" MODIFIED="1460045424622">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="panel"/>
-</node>
-<node TEXT="" ID="ID_1734453018" CREATED="1460045424624" MODIFIED="1460045424624">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="button"/>
-</node>
-<node TEXT="" ID="ID_543164572" CREATED="1460045424626" MODIFIED="1460045424626">
+<node TEXT="" ID="ID_831542900" CREATED="1460127878544" MODIFIED="1460127878544">
 <attribute NAME="nodeType" VALUE="addChildDescriptor"/>
 <attribute NAME="childType" VALUE="GenericIotUi"/>
 </node>
-<node TEXT="" ID="ID_366511057" CREATED="1460045424627" MODIFIED="1460045424627">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="label"/>
-</node>
-<node TEXT="" ID="ID_81077588" CREATED="1460045424629" MODIFIED="1460045424629">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="span"/>
-</node>
-<node TEXT="" ID="ID_1701907051" CREATED="1460045424631" MODIFIED="1460045424631">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="blank_line"/>
-</node>
-<node TEXT="" ID="ID_1155992075" CREATED="1460045424632" MODIFIED="1460045424632">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="row"/>
-</node>
-<node TEXT="" ID="ID_1083648467" CREATED="1460045424633" MODIFIED="1460045424633">
+<node TEXT="" ID="ID_1583529908" CREATED="1460127878547" MODIFIED="1460127878547">
 <attribute NAME="nodeType" VALUE="addChildDescriptor"/>
 <attribute NAME="childType" VALUE="column"/>
 </node>
+<node TEXT="" ID="ID_227441609" CREATED="1460127878550" MODIFIED="1460127878550">
+<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
+<attribute NAME="childType" VALUE="vbox"/>
 </node>
-<node TEXT="" ID="ID_1456177788" CREATED="1460045424618" MODIFIED="1460045424618">
-<attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
-<attribute NAME="name" VALUE="vbox"/>
-<node TEXT="" ID="ID_537724936" CREATED="1460045424618" MODIFIED="1460045424618">
-<attribute NAME="nodeType" VALUE="genericDescriptor"/>
-<attribute NAME="behaviorType" VALUE="componentTemplate"/>
-<attribute NAME="value" VALUE="&lt;div class = &quot;vert&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;&gt;$fp.children&lt;/div&gt;"/>
+<node TEXT="" ID="ID_506677279" CREATED="1460127878555" MODIFIED="1460127878555">
+<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
+<attribute NAME="childType" VALUE="span"/>
 </node>
-<node TEXT="" ID="ID_1992124706" CREATED="1460045424618" MODIFIED="1460045424618">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="width"/>
+<node TEXT="" ID="ID_567973690" CREATED="1460127878559" MODIFIED="1460127878559">
+<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
+<attribute NAME="childType" VALUE="paragraph"/>
 </node>
-<node TEXT="" ID="ID_1556133210" CREATED="1460045424618" MODIFIED="1460045424618">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="space left"/>
+<node TEXT="" ID="ID_577533459" CREATED="1460127878564" MODIFIED="1460127878564">
+<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
+<attribute NAME="childType" VALUE="panel"/>
 </node>
-<node TEXT="" ID="ID_1351079123" CREATED="1460045424618" MODIFIED="1460045424618">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="space right"/>
+<node TEXT="" ID="ID_1359675790" CREATED="1460127878570" MODIFIED="1460127878570">
+<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
+<attribute NAME="childType" VALUE="blank_line"/>
+</node>
+<node TEXT="" ID="ID_1007179291" CREATED="1460127878573" MODIFIED="1460127878573">
+<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
+<attribute NAME="childType" VALUE="row"/>
+</node>
+<node TEXT="" ID="ID_1838323543" CREATED="1460127878577" MODIFIED="1460127878577">
+<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
+<attribute NAME="childType" VALUE="button"/>
+</node>
+<node TEXT="" ID="ID_1149687322" CREATED="1460127878581" MODIFIED="1460127878581">
+<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
+<attribute NAME="childType" VALUE="label"/>
 </node>
 </node>
-<node TEXT="" ID="ID_191215421" CREATED="1460045424619" MODIFIED="1460045424619">
+<node TEXT="" ID="ID_452612825" CREATED="1460127878538" MODIFIED="1460127878538">
 <attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
 <attribute NAME="name" VALUE="hbox"/>
-<node TEXT="" ID="ID_706010145" CREATED="1460045424619" MODIFIED="1460045424619">
+<node TEXT="" ID="ID_1394007308" CREATED="1460127878539" MODIFIED="1460127878539">
 <attribute NAME="nodeType" VALUE="genericDescriptor"/>
 <attribute NAME="behaviorType" VALUE="componentTemplate"/>
 <attribute NAME="value" VALUE="&lt;div class = &quot;horiz&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;&gt;$fp.children&lt;/div&gt;"/>
 </node>
-<node TEXT="" ID="ID_1005694516" CREATED="1460045424620" MODIFIED="1460045424620">
+<node TEXT="" ID="ID_1753821352" CREATED="1460127878539" MODIFIED="1460127878539">
 <attribute NAME="nodeType" VALUE="propertyDescriptor"/>
 <attribute NAME="name" VALUE="width"/>
 </node>
-<node TEXT="" ID="ID_1080747004" CREATED="1460045424620" MODIFIED="1460045424620">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="space left"/>
-</node>
-<node TEXT="" ID="ID_1838693269" CREATED="1460045424620" MODIFIED="1460045424620">
+<node TEXT="" ID="ID_698810409" CREATED="1460127878540" MODIFIED="1460127878540">
 <attribute NAME="nodeType" VALUE="propertyDescriptor"/>
 <attribute NAME="name" VALUE="space right"/>
 </node>
-</node>
-<node TEXT="" ID="ID_620589923" CREATED="1460045424621" MODIFIED="1460045424621">
-<attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
-<attribute NAME="name" VALUE="paragraph"/>
-<node TEXT="" ID="ID_658934393" CREATED="1460045424621" MODIFIED="1460045424621">
-<attribute NAME="nodeType" VALUE="genericDescriptor"/>
-<attribute NAME="behaviorType" VALUE="componentTemplate"/>
-<attribute NAME="value" VALUE="&lt;p&gt;$fp.content&lt;/p&gt;"/>
-</node>
-<node TEXT="" ID="ID_856469346" CREATED="1460045424621" MODIFIED="1460045424621">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="content"/>
-</node>
-</node>
-<node TEXT="" ID="ID_933956717" CREATED="1460045424623" MODIFIED="1460045424623">
-<attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
-<attribute NAME="name" VALUE="panel"/>
-<node TEXT="" ID="ID_1360168579" CREATED="1460045424623" MODIFIED="1460045424623">
-<attribute NAME="nodeType" VALUE="genericDescriptor"/>
-<attribute NAME="behaviorType" VALUE="componentTemplate"/>
-<attribute NAME="value" VALUE="&lt;div class=&quot;panel panel-primary text-center&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;  &gt;&#xd;&#xa;&#x9;&lt;div class=&quot;panel-heading&quot;&gt;$fp.heading&lt;/div&gt;&#xd;&#xa;&#x9;&lt;div class=&quot;panel-body&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;$fp.children&#x9;&#x9;&#xd;&#xa;&#x9;&lt;/div&gt;&#xd;&#xa;&lt;/div&gt;"/>
-</node>
-<node TEXT="" ID="ID_792756250" CREATED="1460045424623" MODIFIED="1460045424623">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="heading"/>
-</node>
-<node TEXT="" ID="ID_1086094777" CREATED="1460045424623" MODIFIED="1460045424623">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="width"/>
-</node>
-<node TEXT="" ID="ID_1961344026" CREATED="1460045424623" MODIFIED="1460045424623">
+<node TEXT="" ID="ID_1269984663" CREATED="1460127878540" MODIFIED="1460127878540">
 <attribute NAME="nodeType" VALUE="propertyDescriptor"/>
 <attribute NAME="name" VALUE="space left"/>
 </node>
-<node TEXT="" ID="ID_1765974323" CREATED="1460045424623" MODIFIED="1460045424623">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="space right"/>
 </node>
-</node>
-<node TEXT="" ID="ID_169393279" CREATED="1460045424624" MODIFIED="1460045424624">
-<attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
-<attribute NAME="name" VALUE="button"/>
-<node TEXT="" ID="ID_375996433" CREATED="1460045424624" MODIFIED="1460045424624">
-<attribute NAME="nodeType" VALUE="genericDescriptor"/>
-<attribute NAME="behaviorType" VALUE="componentTemplate"/>
-<attribute NAME="value" VALUE="&lt;button  class=&quot;btn btn-block btn-lg&quot; type=&quot;button&quot; disabled=&quot;$fp.disabled&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;&gt;$fp.text&lt;/button&gt;"/>
-</node>
-<node TEXT="" ID="ID_1282111494" CREATED="1460045424624" MODIFIED="1460045424624">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="width"/>
-</node>
-<node TEXT="" ID="ID_907515104" CREATED="1460045424625" MODIFIED="1460045424625">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="space left"/>
-</node>
-<node TEXT="" ID="ID_1484903088" CREATED="1460045424625" MODIFIED="1460045424625">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="disabled"/>
-</node>
-<node TEXT="" ID="ID_472540478" CREATED="1460045424625" MODIFIED="1460045424625">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="space right"/>
-</node>
-<node TEXT="" ID="ID_1039426511" CREATED="1460045424625" MODIFIED="1460045424625">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="text"/>
-</node>
-</node>
-<node TEXT="" ID="ID_612117394" CREATED="1460045424626" MODIFIED="1460045424626">
+<node TEXT="" ID="ID_837316744" CREATED="1460127878545" MODIFIED="1460127878545">
 <attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
 <attribute NAME="name" VALUE="GenericIotUi"/>
-<node TEXT="" ID="ID_521678720" CREATED="1460045424626" MODIFIED="1460045424626">
+<node TEXT="" ID="ID_1625335782" CREATED="1460127878545" MODIFIED="1460127878545">
 <attribute NAME="nodeType" VALUE="genericDescriptor"/>
 <attribute NAME="behaviorType" VALUE="componentTemplate"/>
 <attribute NAME="value" VALUE="&lt;script&gt;&#xd;&#xa;&#x9;var uigen = angular.module(&quot;uiGen&quot;);&#xd;&#xa;&#x9;if(uigen == null){&#xd;&#xa;&#x9;&#x9;uigen = angular.module(&quot;uiGen&quot;, [&apos;ui.bootstrap&apos;]);&#xd;&#xa;&#x9;}&#xd;&#xa;&#x9;uigen.controller(&quot;GenericComponentCtrl&quot;, [&apos;$scope&apos;, &apos;$http&apos;, &apos;$interval&apos;, &apos;$location&apos;, function($scope, $http, $interval, $location) {&#xd;&#xa;&#x9;&#x9;$scope.freeMem = 0;&#xd;&#xa;&#x9;&#x9;var boardUrl = ($location.search().boardUrl != undefined ? $location.search().boardUrl : &quot;&quot;);&#xd;&#xa;&#x9;&#x9;var statusUrl, descriptorsUrl;&#xd;&#xa;&#x9;&#x9;if(boardUrl != &quot;&quot;){&#xd;&#xa;&#x9;&#x9;&#x9;statusUrl = &apos;http://&apos; + boardUrl + &apos;/getState&apos;;&#xd;&#xa;&#x9;&#x9;&#x9;descriptorsUrl = &quot;getDescriptors2&quot;;&#xd;&#xa;&#x9;&#x9;}else{&#xd;&#xa;&#x9;&#x9;&#x9;statusUrl = &quot;getStatus&quot;;&#xd;&#xa;&#x9;&#x9;&#x9;descriptorsUrl = &quot;getDescriptors&quot;&#xd;&#xa;&#x9;&#x9;}&#xd;&#xa;&#x9;&#x9;&#xd;&#xa;&#x9;&#x9;var getDescriptorsValues = function(elements){&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;$scope.freeMem = elements.FREE_MEM;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;for (var i = 0; i &lt; $scope.descriptors.elems.length; i++) {&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&#x9;$scope.descriptors.elems[i].value = eval(&quot;elements.&quot; + $scope.descriptors.elems[i].name);&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;}&#xd;&#xa;&#x9;&#x9;}&#xd;&#xa;&#x9;&#x9;var checkStatus = function() {&#xd;&#xa;&#x9;&#x9;&#x9;$http.get(statusUrl).success(function(response) {&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;getDescriptorsValues(response);&#xd;&#xa;&#x9;&#x9;&#x9;})&#xd;&#xa;&#x9;&#x9;};&#xd;&#xa;&#x9;&#x9;$interval(checkStatus, 1000);&#xd;&#xa;&#x9;&#x9;$http.get(descriptorsUrl).success(function(response) {&#xd;&#xa;&#x9;&#x9;&#x9;$scope.descriptors = response;&#xd;&#xa;&#x9;&#x9;})&#xd;&#xa;&#x9;}]);&#xd;&#xa;&lt;/script&gt;&#xd;&#xa;&lt;div class=&quot;container-fluid&quot; ng-controller=&quot;GenericComponentCtrl&quot;&gt;&#xd;&#xa;&#x9;&lt;div class=&quot;row&quot;&gt;&#xd;&#xa;&#x9;&#x9;&lt;div class=&quot;col-md-4 col-md-offset-4&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&lt;div class=&quot;panel panel-primary text-center&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&lt;div class=&quot;panel-heading&quot;&gt;Status&lt;/div&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&lt;div class=&quot;panel-body&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&#x9;&lt;div ng-repeat=&quot;elem in descriptors.elems&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&lt;span&gt; Value of {{elem.label}} is {{elem.value}}&lt;/span&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&lt;div class=&quot;row&quot;&gt;&#xd;&#xa;&#x9;&#x9;&lt;div class=&quot;col-md-4 col-md-offset-4&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&lt;div class=&quot;panel panel-primary text-center&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&lt;div class=&quot;panel-heading&quot;&gt;Commands&lt;/div&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&lt;div class=&quot;panel-body&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&#x9;&lt;button ng-repeat=&quot;button in descriptors.commands&quot; class=&quot;btn btn-block btn-lg&quot; type=&quot;button&quot; ng-click=&quot;invoke(button.onclick)&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;{{button.text}}&#xd;&#xa;&#x9;&#x9;   &lt;/button&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&#x9;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&lt;div class=&quot;row&quot;&gt;&#xd;&#xa;&#x9;&#x9;&lt;div class=&quot; col-md-8 col-md-offset-4&quot;&gt;&lt;span class=&quot;label label-default&quot;&gt;&lt;span class=&quot;glyphicon glyphicon-dashboard&quot;&gt;&lt;/span&gt; Free memory (SRAM): {{freeMem}} bytes&lt;/span&gt;&#xd;&#xa;&#x9;&#x9;&lt;/div&gt;&#xd;&#xa;&#x9;&lt;/div&gt;&#xd;&#xa;&lt;/div&gt;"/>
 </node>
 </node>
-<node TEXT="" ID="ID_639955918" CREATED="1460045424628" MODIFIED="1460045424628">
+<node TEXT="" ID="ID_366986528" CREATED="1460127878548" MODIFIED="1460127878548">
 <attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
-<attribute NAME="name" VALUE="label"/>
-<node TEXT="" ID="ID_836964605" CREATED="1460045424628" MODIFIED="1460045424628">
+<attribute NAME="name" VALUE="column"/>
+<node TEXT="" ID="ID_717023723" CREATED="1460127878548" MODIFIED="1460127878548">
 <attribute NAME="nodeType" VALUE="genericDescriptor"/>
 <attribute NAME="behaviorType" VALUE="componentTemplate"/>
-<attribute NAME="value" VALUE="&lt;span class=&quot;label label-default&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;&gt;$fp.text&lt;/span&gt;&#xd;&#xa;&lt;br/&gt;"/>
+<attribute NAME="value" VALUE="&lt;div class=&quot;$fp.col witdh&quot;&gt;$fp.children&lt;/div&gt;"/>
 </node>
-<node TEXT="" ID="ID_1797291414" CREATED="1460045424628" MODIFIED="1460045424628">
+<node TEXT="" ID="ID_1926982745" CREATED="1460127878548" MODIFIED="1460127878548">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="col witdh"/>
+</node>
+</node>
+<node TEXT="" ID="ID_1089427249" CREATED="1460127878551" MODIFIED="1460127878551">
+<attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
+<attribute NAME="name" VALUE="vbox"/>
+<node TEXT="" ID="ID_978391001" CREATED="1460127878551" MODIFIED="1460127878551">
+<attribute NAME="nodeType" VALUE="genericDescriptor"/>
+<attribute NAME="behaviorType" VALUE="componentTemplate"/>
+<attribute NAME="value" VALUE="&lt;div class = &quot;vert&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;&gt;$fp.children&lt;/div&gt;"/>
+</node>
+<node TEXT="" ID="ID_1136867762" CREATED="1460127878552" MODIFIED="1460127878552">
 <attribute NAME="nodeType" VALUE="propertyDescriptor"/>
 <attribute NAME="name" VALUE="width"/>
 </node>
-<node TEXT="" ID="ID_486215447" CREATED="1460045424628" MODIFIED="1460045424628">
-<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="space left"/>
-</node>
-<node TEXT="" ID="ID_183516385" CREATED="1460045424628" MODIFIED="1460045424628">
+<node TEXT="" ID="ID_553942637" CREATED="1460127878552" MODIFIED="1460127878552">
 <attribute NAME="nodeType" VALUE="propertyDescriptor"/>
 <attribute NAME="name" VALUE="space right"/>
 </node>
-<node TEXT="" ID="ID_1426842967" CREATED="1460045424628" MODIFIED="1460045424628">
+<node TEXT="" ID="ID_1910193528" CREATED="1460127878553" MODIFIED="1460127878553">
 <attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="text"/>
+<attribute NAME="name" VALUE="space left"/>
 </node>
 </node>
-<node TEXT="" ID="ID_285464006" CREATED="1460045424629" MODIFIED="1460045424629">
+<node TEXT="" ID="ID_498102343" CREATED="1460127878556" MODIFIED="1460127878556">
 <attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
 <attribute NAME="name" VALUE="span"/>
-<node TEXT="" ID="ID_1350820176" CREATED="1460045424630" MODIFIED="1460045424630">
+<node TEXT="" ID="ID_1908334366" CREATED="1460127878556" MODIFIED="1460127878556">
 <attribute NAME="nodeType" VALUE="genericDescriptor"/>
 <attribute NAME="behaviorType" VALUE="componentTemplate"/>
 <attribute NAME="value" VALUE="&lt;span&gt;$fp.text&lt;/span&gt;&#xd;&#xa;&lt;br/&gt;"/>
 </node>
-<node TEXT="" ID="ID_154404603" CREATED="1460045424630" MODIFIED="1460045424630">
+<node TEXT="" ID="ID_1939424480" CREATED="1460127878556" MODIFIED="1460127878556">
 <attribute NAME="nodeType" VALUE="propertyDescriptor"/>
 <attribute NAME="name" VALUE="text"/>
 </node>
 </node>
-<node TEXT="" ID="ID_1550509920" CREATED="1460045424631" MODIFIED="1460045424631">
+<node TEXT="" ID="ID_1525882387" CREATED="1460127878560" MODIFIED="1460127878560">
+<attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
+<attribute NAME="name" VALUE="paragraph"/>
+<node TEXT="" ID="ID_1512116873" CREATED="1460127878561" MODIFIED="1460127878561">
+<attribute NAME="nodeType" VALUE="genericDescriptor"/>
+<attribute NAME="behaviorType" VALUE="componentTemplate"/>
+<attribute NAME="value" VALUE="&lt;p&gt;$fp.content&lt;/p&gt;"/>
+</node>
+<node TEXT="" ID="ID_800905483" CREATED="1460127878561" MODIFIED="1460127878561">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="content"/>
+</node>
+</node>
+<node TEXT="" ID="ID_499568896" CREATED="1460127878564" MODIFIED="1460127878564">
+<attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
+<attribute NAME="name" VALUE="panel"/>
+<node TEXT="" ID="ID_1313396490" CREATED="1460127878565" MODIFIED="1460127878565">
+<attribute NAME="nodeType" VALUE="genericDescriptor"/>
+<attribute NAME="behaviorType" VALUE="componentTemplate"/>
+<attribute NAME="value" VALUE="&lt;div class=&quot;panel panel-primary text-center&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;  &gt;&#xd;&#xa;&#x9;&lt;div class=&quot;panel-heading&quot;&gt;$fp.heading&lt;/div&gt;&#xd;&#xa;&#x9;&lt;div class=&quot;panel-body&quot;&gt;&#xd;&#xa;&#x9;&#x9;&#x9;$fp.children&#x9;&#x9;&#xd;&#xa;&#x9;&lt;/div&gt;&#xd;&#xa;&lt;/div&gt;"/>
+</node>
+<node TEXT="" ID="ID_1594320104" CREATED="1460127878565" MODIFIED="1460127878565">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="width"/>
+</node>
+<node TEXT="" ID="ID_1070416341" CREATED="1460127878566" MODIFIED="1460127878566">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="space right"/>
+</node>
+<node TEXT="" ID="ID_137134342" CREATED="1460127878567" MODIFIED="1460127878567">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="space left"/>
+</node>
+<node TEXT="" ID="ID_1090250697" CREATED="1460127878567" MODIFIED="1460127878567">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="heading"/>
+</node>
+</node>
+<node TEXT="" ID="ID_1728324887" CREATED="1460127878570" MODIFIED="1460127878570">
 <attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
 <attribute NAME="name" VALUE="blank_line"/>
-<node TEXT="" ID="ID_1292709638" CREATED="1460045424631" MODIFIED="1460045424631">
+<node TEXT="" ID="ID_263592808" CREATED="1460127878571" MODIFIED="1460127878571">
 <attribute NAME="nodeType" VALUE="genericDescriptor"/>
 <attribute NAME="behaviorType" VALUE="componentTemplate"/>
 <attribute NAME="value" VALUE="&lt;br/&gt;"/>
 </node>
 </node>
-<node TEXT="" ID="ID_1967137155" CREATED="1460045424632" MODIFIED="1460045424632">
+<node TEXT="" ID="ID_1215257997" CREATED="1460127878574" MODIFIED="1460127878574">
 <attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
 <attribute NAME="name" VALUE="row"/>
-<node TEXT="" ID="ID_1506776709" CREATED="1460045424632" MODIFIED="1460045424632">
+<node TEXT="" ID="ID_1593655745" CREATED="1460127878574" MODIFIED="1460127878574">
 <attribute NAME="nodeType" VALUE="genericDescriptor"/>
 <attribute NAME="behaviorType" VALUE="componentTemplate"/>
 <attribute NAME="value" VALUE="&lt;div class=&quot;row&quot;&gt;$fp.children&lt;/div&gt;"/>
 </node>
-<node TEXT="" ID="ID_1369731238" CREATED="1460045476803" MODIFIED="1460045476803">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="column"/>
-<attribute NAME="orderIndex" VALUE="-2.147483648E9" OBJECT="java.lang.Double|-2.147483648E9"/>
-<attribute NAME="type" VALUE="addChildDescriptor"/>
 </node>
-</node>
-<node TEXT="" ID="ID_492055027" CREATED="1460045424634" MODIFIED="1460045424634">
+<node TEXT="" ID="ID_1900732023" CREATED="1460127878578" MODIFIED="1460127878578">
 <attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
-<attribute NAME="name" VALUE="column"/>
-<node TEXT="" ID="ID_1586865129" CREATED="1460045424634" MODIFIED="1460045424634">
+<attribute NAME="name" VALUE="button"/>
+<node TEXT="" ID="ID_225740641" CREATED="1460127878578" MODIFIED="1460127878578">
 <attribute NAME="nodeType" VALUE="genericDescriptor"/>
 <attribute NAME="behaviorType" VALUE="componentTemplate"/>
-<attribute NAME="value" VALUE="&lt;div class=&quot;$fp.col witdh&quot;&gt;$fp.children&lt;/div&gt;"/>
+<attribute NAME="value" VALUE="&lt;button  class=&quot;btn btn-block btn-lg&quot; type=&quot;button&quot; disabled=&quot;$fp.disabled&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;&gt;$fp.text&lt;/button&gt;"/>
 </node>
-<node TEXT="" ID="ID_267389477" CREATED="1460045424634" MODIFIED="1460045424634">
+<node TEXT="" ID="ID_691294105" CREATED="1460127878578" MODIFIED="1460127878578">
 <attribute NAME="nodeType" VALUE="propertyDescriptor"/>
-<attribute NAME="name" VALUE="col witdh"/>
+<attribute NAME="name" VALUE="disabled"/>
 </node>
-<node TEXT="" ID="ID_1247092052" CREATED="1460045469605" MODIFIED="1460045469605">
-<attribute NAME="nodeType" VALUE="addChildDescriptor"/>
-<attribute NAME="childType" VALUE="panel"/>
-<attribute NAME="orderIndex" VALUE="-2.147483648E9" OBJECT="java.lang.Double|-2.147483648E9"/>
-<attribute NAME="type" VALUE="addChildDescriptor"/>
+<node TEXT="" ID="ID_1692103347" CREATED="1460127878579" MODIFIED="1460127878579">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="width"/>
+</node>
+<node TEXT="" ID="ID_110842642" CREATED="1460127878579" MODIFIED="1460127878579">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="space right"/>
+</node>
+<node TEXT="" ID="ID_597055849" CREATED="1460127878579" MODIFIED="1460127878579">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="space left"/>
+</node>
+<node TEXT="" ID="ID_1314781425" CREATED="1460127878579" MODIFIED="1460127878579">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="text"/>
+</node>
+</node>
+<node TEXT="" ID="ID_796197522" CREATED="1460127878582" MODIFIED="1460127878582">
+<attribute NAME="nodeType" VALUE="typeOrCategoryDescriptor"/>
+<attribute NAME="name" VALUE="label"/>
+<node TEXT="" ID="ID_384426703" CREATED="1460127878582" MODIFIED="1460127878582">
+<attribute NAME="nodeType" VALUE="genericDescriptor"/>
+<attribute NAME="behaviorType" VALUE="componentTemplate"/>
+<attribute NAME="value" VALUE="&lt;span class=&quot;label label-default&quot; style=&quot;width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;&quot;&gt;$fp.text&lt;/span&gt;&#xd;&#xa;&lt;br/&gt;"/>
+</node>
+<node TEXT="" ID="ID_1327420951" CREATED="1460127878582" MODIFIED="1460127878582">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="width"/>
+</node>
+<node TEXT="" ID="ID_1145126284" CREATED="1460127878583" MODIFIED="1460127878583">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="space right"/>
+</node>
+<node TEXT="" ID="ID_295641665" CREATED="1460127878583" MODIFIED="1460127878583">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="space left"/>
+</node>
+<node TEXT="" ID="ID_913793185" CREATED="1460127878583" MODIFIED="1460127878583">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="name" VALUE="text"/>
 </node>
 </node>
 </node>
@@ -281,6 +269,7 @@
 <attribute NAME="sync" VALUE="true" OBJECT="java.lang.Boolean|true"/>
 <attribute NAME="childrenConflict" VALUE="false" OBJECT="java.lang.Boolean|false"/>
 <attribute NAME="childrenSync" VALUE="true" OBJECT="java.lang.Boolean|true"/>
+<attribute NAME="acceptedFiles" VALUE="[ hbox,  GenericIotUi,  column, vbox,  span,  paragraph,  panel,  blank_line,  row,  button,  label]" OBJECT="java.util.HashSet|[ hbox,  GenericIotUi,  column, vbox,  span,  paragraph,  panel,  blank_line,  row,  button,  label]"/>
 </node>
 </node>
 </map>
