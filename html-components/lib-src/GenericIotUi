@@ -1,7 +1,9 @@
 <script>
 	var uigen = angular.module("uiGen");
 	if(uigen == null){
+// REVIEW: atentie la formatare; am vazut in mai multe locuri. Trebuie folosita ac. conventie ca si la java. E.g. aici lipsesc 2 spatii
 		uigen = angular.module("uiGen", ['ui.bootstrap']);
+// REVIEW: ce face acest cod/if? de ce avem nevoie de el
 	}
 	uigen.controller("GenericComponentCtrl", ['$scope', '$http', '$interval', '$location', function($scope, $http, $interval, $location) {
 		$scope.freeMem = 0;
@@ -10,6 +12,9 @@
 		if(boardUrl != ""){
 			statusUrl = 'http://' + boardUrl + '/getState';
 			descriptorsUrl = "getDescriptors2";
+// REVIEW: exista o problema majora. Trebuie delimitat clar ce sta in template-ul root, si ce sta in template-ul acestui component. 
+// codul asta, logica de status precum si eticheta freemem nu ar trebui sa stea aici, ci in template-ul root. De asemenea, ce e cu acest
+// "getDescriptors2"
 		}else{
 			statusUrl = "getStatus";
 			descriptorsUrl = "getDescriptors"
@@ -19,6 +24,9 @@
 				$scope.freeMem = elements.FREE_MEM;
 				for (var i = 0; i < $scope.descriptors.elems.length; i++) {
 					$scope.descriptors.elems[i].value = eval("elements." + $scope.descriptors.elems[i].name);
+// REVIEW: functia asta nu este necesara. Imi amintesc ca am vb deja acest lucru. getStatus (care sta in tpl root dupa cum am zis mai sus)
+// primeste un json. Ea ea acest json si il pune in $scope.status. Toate elementele grafice fac bind pe $scope.status.???; e.g. $scope.status.freeMem, 
+// $scope.status.light1, etc.
 				}
 		}
 		var checkStatus = function() {
