@@ -106,8 +106,11 @@
 
 <body class="content" ng-controller="RootCtrl">
     <%
-	String htmlOutput = utils.replacementAlgo(node.getNodeUri());
+	//String htmlOutput = utils.replacementAlgo(node.getNodeUri());	
+	htmlTemplateUtils.test();
+	String htmlOutput = htmlTemplateUtils.replacementAlgo(node.getNodeUri());
 	out.println(htmlOutput);
+	
 %>
 </body>
 </html>
