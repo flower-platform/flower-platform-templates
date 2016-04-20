@@ -43,7 +43,7 @@
 	});
 %>
 <!DOCTYPE html>
-<html ng-app="uiGen">
+<html ng-app="ui">
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.2/ui-bootstrap-tpls.min.js"></script>
@@ -77,46 +77,34 @@
             font-weight: 300;
             line-height: 1.4;
         }
-// REVIEW: stilurile astea ce fac? parca nu existau in varianta initiala pe care o generam
     </style>
-	
-	<script>
-        var uigen = angular.module("uiGen", ['ui.bootstrap']);
-// REVIEW: e conflict de nume cu cel din generic-ui. am putea sa-i spunem simplu "ui"
-        uigen.controller("UiGenCtrl", ['\$scope', '\$http', '\$interval', '\$location', function(\$scope, \$http, \$interval, \$location) {
+    <script>
+        var ui = angular.module("ui", ['ui.bootstrap']);
+        ui.controller("RootCtrl", ['\$scope', '\$http', '\$interval', '\$location', function(\$scope, \$http, \$interval, \$location) {
             var boardUrl = (\$location.search().boardUrl != undefined ? \$location.search().boardUrl : "");
-			var statusUrl, descriptorsUrl;
-			\$scope.status = {};
-			
-			if(boardUrl != ""){
-				statusUrl = 'http://' + boardUrl + '/getState';				
-			}else{
-				statusUrl = "getStatus";
-			}
-			
-			var getDescriptorsValues = function(status){
-				\$scope.status = status;
-			}
+            var statusUrl = "getStatus";
+            \$scope.status = {};
+            //decomment this for test scenarios with board
+            /*if (boardUrl != "") {
+            	statusUrl = 'http://' + boardUrl + '/getState';
+			}*/
             var checkStatus = function() {
-                \$http.get(statusUrl).success(function(response) {
-					getDescriptorsValues(response);
+                \$http.get(statusUrl).success(function(status) {
+                    \$scope.status = status;
                 })
             };
-            //\$interval(checkStatus, 1000);
-			
-			checkStatus();
-						
+            //\$interval(checkStatus, 1000);			
+            checkStatus();
             \$scope.invoke = function(path, successHandler, errorHandler) {
-                \$http.get("http://" + boardUrl +"/" + path).success(function(response) {
-					getDescriptorsValues(response);
-// REVIEW: la momentul de fata, fiecare apel de comanda, reintoarce si un status. Ar trebui deci facut update-ul statusului.					
+                \$http.get("http://" + boardUrl + "/" + path).success(function(response) {
+                    checkStatus();
                 });
             }
         }]);
     </script>
 </head>
 
-<body class="content" ng-controller="UiGenCtrl">
+<body class="content" ng-controller="RootCtrl">
     <%
 	String htmlOutput = utils.replacementAlgo(node.getNodeUri());
 	out.println(htmlOutput);
