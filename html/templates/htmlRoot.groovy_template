@@ -1,47 +1,3 @@
-<%
-	generationSession.scope.put("utils", new org.flowerplatform.codesync.template_new.TemplateUtils(generationSession) {
-// REVIEW: exista acum o modalitate prin care se poate contribui la popularea generationSession.scope. Vreau sa ne folosim de ea. Vom crea o clasa:
-// .arduino.template.HtmlTemplateUtils (pusa ca "htmlTemplateUtils"). Acolo punem logica asta.
-// o sa vreau sa discutam de teste unitare ale acestei metode. Inainte sa discutam, gandeste-te te rog la scenarii posibile (actiune + test asociat).
-		def replacementAlgo(nodeUri) {
-			String output = " ";
-			for (child in nodeService.getChildren(nodeUri, null)) {
-				genericDescriptors = behaviorRegistry.getAdditiveControllers("componentTemplate", child);
-				String pattern = '\\$fp\\.((?:\\w|_| )*)';
-// REVIEW: intre timp am discutat de punerea paternului ca constanta				
-				if(genericDescriptors == null)
-					output;
-// REVIEW: format: lipseste spatiu; lipsesc {}; noi le punem mereu; mai sunt si alte probleme de format					
-				String result = org.flowerplatform.util.Utils.replaceRegEx(genericDescriptors[0].value, java.util.regex.Pattern.compile(pattern), new org.flowerplatform.util.RunnableWithParam<String, java.util.regex.Matcher>() {
-					public String run(java.util.regex.Matcher param) {
-						String nodePropertyName  = param.group(1);
-						if(nodePropertyName.equals("children")){
-// REVIEW: vei lua din constanta pe care ai facut-o intre timp						
-							return replacementAlgo(child.getNodeUri());
-						}
-						replacement =  child.getPropertyValue(nodePropertyName);
-						if(replacement != null){
-							String pattern2 = '\\{((?:\\w|_| )*)\\}';
-// REVIEW: de ce avem 2 patterns? si de 2 ori replace? eu cred ca se poate face cu un singur pattern/bucla de replace							
-							replacement = org.flowerplatform.util.Utils.replaceRegEx(replacement, java.util.regex.Pattern.compile(pattern2), new org.flowerplatform.util.RunnableWithParam<String, java.util.regex.Matcher>() {
-								public String run(java.util.regex.Matcher parameter) {
-									String toReplace  = parameter.group(1).replace('{','').replace('}','');
-									replacement = "{{status." + toReplace + "}}"
-								}							
-							});
-							return  replacement;
-						}else{
-							return " ";
-						}
-					}
-							
-				});
-				output += result;		
-			}
-			output;
-		}
-	});
-%>
 <!DOCTYPE html>
 <html ng-app="ui">
 <head>
@@ -106,9 +62,7 @@
 
 <body class="content" ng-controller="RootCtrl">
     <%
-	//String htmlOutput = utils.replacementAlgo(node.getNodeUri());	
-	htmlTemplateUtils.test();
-	String htmlOutput = htmlTemplateUtils.replacementAlgo(node.getNodeUri());
+	String htmlOutput = htmlTemplateUtils.replacePropertiesWithValuesForEachChildNode(node.getNodeUri());
 	out.println(htmlOutput);
 	
 %>
