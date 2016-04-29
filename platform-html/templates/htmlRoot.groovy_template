@@ -1,49 +1,5 @@
-<%
-	generationSession.scope.put("utils", new org.flowerplatform.codesync.template_new.TemplateUtils(generationSession) {
-// REVIEW: exista acum o modalitate prin care se poate contribui la popularea generationSession.scope. Vreau sa ne folosim de ea. Vom crea o clasa:
-// .arduino.template.HtmlTemplateUtils (pusa ca "htmlTemplateUtils"). Acolo punem logica asta.
-// o sa vreau sa discutam de teste unitare ale acestei metode. Inainte sa discutam, gandeste-te te rog la scenarii posibile (actiune + test asociat).
-		def replacementAlgo(nodeUri) {
-			String output = " ";
-			for (child in nodeService.getChildren(nodeUri, null)) {
-				genericDescriptors = behaviorRegistry.getAdditiveControllers("componentTemplate", child);
-				String pattern = '\\$fp\\.((?:\\w|_| )*)';
-// REVIEW: intre timp am discutat de punerea paternului ca constanta				
-				if(genericDescriptors == null)
-					output;
-// REVIEW: format: lipseste spatiu; lipsesc {}; noi le punem mereu; mai sunt si alte probleme de format					
-				String result = org.flowerplatform.util.Utils.replaceRegEx(genericDescriptors[0].value, java.util.regex.Pattern.compile(pattern), new org.flowerplatform.util.RunnableWithParam<String, java.util.regex.Matcher>() {
-					public String run(java.util.regex.Matcher param) {
-						String nodePropertyName  = param.group(1);
-						if(nodePropertyName.equals("children")){
-// REVIEW: vei lua din constanta pe care ai facut-o intre timp						
-							return replacementAlgo(child.getNodeUri());
-						}
-						replacement =  child.getPropertyValue(nodePropertyName);
-						if(replacement != null){
-							String pattern2 = '\\{((?:\\w|_| )*)\\}';
-// REVIEW: de ce avem 2 patterns? si de 2 ori replace? eu cred ca se poate face cu un singur pattern/bucla de replace							
-							replacement = org.flowerplatform.util.Utils.replaceRegEx(replacement, java.util.regex.Pattern.compile(pattern2), new org.flowerplatform.util.RunnableWithParam<String, java.util.regex.Matcher>() {
-								public String run(java.util.regex.Matcher parameter) {
-									String toReplace  = parameter.group(1).replace('{','').replace('}','');
-									replacement = "{{status." + toReplace + "}}"
-								}							
-							});
-							return  replacement;
-						}else{
-							return " ";
-						}
-					}
-							
-				});
-				output += result;		
-			}
-			output;
-		}
-	});
-%>
 <!DOCTYPE html>
-<html ng-app="uiGen">
+<html ng-app="ui">
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.2/ui-bootstrap-tpls.min.js"></script>
@@ -77,49 +33,39 @@
             font-weight: 300;
             line-height: 1.4;
         }
-// REVIEW: stilurile astea ce fac? parca nu existau in varianta initiala pe care o generam
     </style>
-	
-	<script>
-        var uigen = angular.module("uiGen", ['ui.bootstrap']);
-// REVIEW: e conflict de nume cu cel din generic-ui. am putea sa-i spunem simplu "ui"
-        uigen.controller("UiGenCtrl", ['\$scope', '\$http', '\$interval', '\$location', function(\$scope, \$http, \$interval, \$location) {
+    <script>
+        var ui = angular.module("ui", ['ui.bootstrap']);
+        ui.controller("RootCtrl", ['\$scope', '\$http', '\$interval', '\$location', function(\$scope, \$http, \$interval, \$location) {
             var boardUrl = (\$location.search().boardUrl != undefined ? \$location.search().boardUrl : "");
-			var statusUrl, descriptorsUrl;
-			\$scope.status = {};
-			
-			if(boardUrl != ""){
-				statusUrl = 'http://' + boardUrl + '/getState';				
-			}else{
-				statusUrl = "getStatus";
-			}
-			
-			var getDescriptorsValues = function(status){
-				\$scope.status = status;
-			}
+            var statusUrl = "getStatus";
+            \$scope.status = {};
+// TODO REVIEW: pana la urma tot nu ne-am inteles. Trebuie sa ai un "baseUrl". Daca nu am nimic in queryString => e ""; daca am ceva (e.g. 192.168.1.1) => "http://192.168.1.1/"            
+            //decomment this for test scenarios with board
+            /*if (boardUrl != "") {
+            	statusUrl = 'http://' + boardUrl + '/getState';
+			}*/
             var checkStatus = function() {
-                \$http.get(statusUrl).success(function(response) {
-					getDescriptorsValues(response);
+                \$http.get(statusUrl).success(function(status) {
+                    \$scope.status = status;
                 })
             };
-            //\$interval(checkStatus, 1000);
-			
-			checkStatus();
-						
+            //\$interval(checkStatus, 1000);			
+            checkStatus();
             \$scope.invoke = function(path, successHandler, errorHandler) {
-                \$http.get("http://" + boardUrl +"/" + path).success(function(response) {
-					getDescriptorsValues(response);
-// REVIEW: la momentul de fata, fiecare apel de comanda, reintoarce si un status. Ar trebui deci facut update-ul statusului.					
+                \$http.get("http://" + boardUrl + "/" + path).success(function(response) {
+                    checkStatus();
                 });
             }
         }]);
     </script>
 </head>
 
-<body class="content" ng-controller="UiGenCtrl">
-    <%
-	String htmlOutput = utils.replacementAlgo(node.getNodeUri());
+<body class="content" ng-controller="RootCtrl">
+<%
+	String htmlOutput = htmlTemplateUtils.replacePropertiesWithValuesForEachChildNode(node.getNodeUri());
 	out.println(htmlOutput);
+	
 %>
 </body>
 </html>
