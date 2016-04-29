@@ -1,4 +1,0 @@
-useNewTemplates = true
-root = dynamic_fparduino__board
-label = arduino
-gen_files = $PARENT_DIR.ino:arduino

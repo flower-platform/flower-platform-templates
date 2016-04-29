@@ -1,0 +1,4 @@
+useNewTemplates = true
+root = dynamic_default__componentsRoot
+label = default
+gen_files = index.html:htmlRoot
