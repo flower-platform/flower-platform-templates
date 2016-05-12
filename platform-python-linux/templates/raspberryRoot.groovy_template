@@ -1,3 +1,179 @@
 <%
-def now = new Date();
-%>Acum este: $now. Salutari!
+import org.flowerplatform.util.Utils;
+import org.flowerplatform.util.UtilConstants;
+import org.flowerplatform.arduino.ArduinoNodeConstants;
+
+final PROPERTY_NAME = "name";
+generationSession.scope.put("utils", new org.flowerplatform.codesync.template_new.TemplateUtils(generationSession) {
+	//TODO : check if "null" (as string value, as opposed to the value null) is ok to be returned from node.getPropertyValue();
+	boolean isEmptyString(Object param) {
+		String strValue = String.valueOf(param);
+	
+		return strValue == null || strValue.allWhitespace || "null".equals(strValue);
+// REVIEW: nu inteleg de unde vin cazurile pe care le descrii tu aici. Cred ca e o problema mai adanca. Poti reproduce?
+// e.g. "null"; apoi name = " ": nu cred ca ar trebui sa-l sarim. Va trebui sa lasam (si sa dea eroare). Caci omul si-a pus componentul, dar a uitat sa-i dea nume
+	}
+	
+	//Some property names should be excluded automatically (such as the "name" property, so that we don't end up with stuff like varName.name = varName)
+	//This function returns true if the property name given as parameter should be excluded from processing.
+	boolean excludePropertyName(String propertyName) {
+		String[] excludePropertyNames = [PROPERTY_NAME] as String[];
+		
+		for (String prop : excludePropertyNames) {
+			if (prop.equals(propertyName)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+// REVIEW: nu prea e performanta. Eu as fi facut un set sau map static final. Astfel se verifica rapid. Si de asemenea, se poate scrie intr-o
+// singura linie. new HashMap(Arrays.asList(...));
+	
+	String getEventHandlerFunctionName(String componentName, String eventName) {
+		return componentName + "_" + eventName;
+	}
+
+	String getEventHandlerParamListAsString(Object eventNode) {
+		def paramDescriptorList = behaviorRegistry.getAdditiveControllers(ArduinoNodeConstants.BEHAVIOR_EVENT_PARAMETER, eventNode);
+		StringBuilder result = new StringBuilder();
+	
+		int paramIndex = 0;
+		for (paramDescriptor in paramDescriptorList) {
+			if (result.length() > 0) {
+				result.append(', ');
+			}
+		
+			result.append(paramDescriptor.getValue());
+			result.append(' ');
+			result.append("param");
+			result.append(paramIndex);
+			
+			paramIndex++;
+		}
+		
+		return result.toString();
+	}
+});
+
+%>
+#!/usr/bin/python
+import sys
+import time
+import RPi.GPIO as GPIO
+from Input import Input
+from Output import Output
+
+<%
+//Declaring the components
+for (child in nodeService.getChildren(node.getNodeUri(), null)) { 
+	def childName = child.getPropertyValue(PROPERTY_NAME);
+	
+	//Exclude any component that doesn't have a name
+	if (!utils.isEmptyString(childName)) {
+	
+%>${childName} = ${Utils.getSimpleTypeFromDynamicType(child.getType())}()\r\n<%
+
+	}
+}
+
+//Add the corresponding event handler stub implementations.
+for (child in nodeService.getChildren(node.getNodeUri(), null)) {
+	def childName = child.getPropertyValue(PROPERTY_NAME);
+
+	for (eventNode in nodeService.getChildren(child.getNodeUri(), null)) {
+		if (behaviorRegistry.belongsToCategory(ArduinoNodeConstants.TYPE_CATEGORY_EVENT, eventNode, null, true, null) ) {
+// REVIEW: nu e luat in considerare cazul 
+			def eventName = eventNode.getPropertyValue(PROPERTY_NAME);
+%>
+<% // def ${utils.getEventHandlerFunctionName(childName, eventName)}(${utils.getEventHandlerParamListAsString(eventNode)}): 
+%>
+def ${utils.getEventHandlerFunctionName(childName, eventName)}(event): 
+    # TODO Generate code here
+    pass
+<%
+
+		}
+	}
+}
+%>
+def setup():<%
+    //Property initialisation section.
+    for (child in nodeService.getChildren(node.getNodeUri(), null)) {
+        def childName = child.getPropertyValue(PROPERTY_NAME);
+    
+        for (childPropertyName in behaviorRegistry.getAdditiveControllers(UtilConstants.FEATURE_PROPERTY_DESCRIPTORS, child)) {
+            def propertyName = childPropertyName.getName();
+            def propertyValue = child.getPropertyValue(propertyName);
+
+            //some property names, such as "name" should be excluded from initialisation.
+            if (utils.excludePropertyName(propertyName)) {
+                continue;
+            }
+            
+            if (!utils.isEmptyString(propertyValue)) {
+            
+%>
+    ${childName}.${propertyName} = ${propertyValue}<%
+            
+            }
+        }
+    
+    }
+    %>\r\n<%
+    //Add the corresponding event handler references.
+    for (child in nodeService.getChildren(node.getNodeUri(), null)) {
+        def childName = child.getPropertyValue(PROPERTY_NAME);
+    
+        for (eventNode in nodeService.getChildren(child.getNodeUri(), null)) {
+            if ( behaviorRegistry.belongsToCategory(ArduinoNodeConstants.TYPE_CATEGORY_EVENT, eventNode, null, true, null) ) {
+                def eventName = eventNode.getPropertyValue(PROPERTY_NAME);
+            
+%>  
+    ${childName}.${eventName} = ${utils.getEventHandlerFunctionName(childName, eventName)}<%
+
+            }
+        }
+    }
+
+    for (child in nodeService.getChildren(node.getNodeUri(), null)) {
+        def childName = child.getPropertyValue(PROPERTY_NAME);
+
+%>  
+    ${childName}.setup()<%
+        
+    }
+%>
+
+def start(): 
+    while True:<%
+    for (child in nodeService.getChildren(node.getNodeUri(), null)) {
+        def childName = child.getPropertyValue(PROPERTY_NAME);
+
+%>  
+        ${childName}.loop()<%
+        
+    }
+%>
+
+if __name__ == '__main__' :
+    setup()
+    start()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
