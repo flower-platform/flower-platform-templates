@@ -36,41 +36,42 @@
     </style>
 </head>
 <body class="content" ng-controller="RootCtrl">
-<%
-	String htmlOutput = htmlTemplateUtils.replacePropertiesWithValuesForEachChildNode(node.getNodeUri());
-	out.println(htmlOutput);
+	<script>
+	var ui = angular.module("ui", ['ui.bootstrap' <% out.println(htmlTemplateUtils.getModulesToImportString())%> ]);
+	ui.controller("RootCtrl", ['\$scope', '\$http', '\$interval', '\$location', function(\$scope, \$http, \$interval, \$location) {
+		var boardUrl = (\$location.search().boardUrl != undefined ? \$location.search().boardUrl : "");
+		var baseUrl = "";
+		\$scope.status = {};     
+		if (boardUrl != "") {
+			baseUrl = 'http://' + boardUrl + '/';
+		}
+		
+		\$scope.getBoardUrl = function(appendableQueryString){
+			return baseUrl + appendableQueryString;
+		}
+		
+		var checkStatus = function() {
+			\$http.get(\$scope.getBoardUrl("getState")).success(function(status) {
+				\$scope.status = status;
+			})
+		};
+		//\$interval(checkStatus, 1000);			
+		checkStatus();
+		\$scope.invoke = function(path, successHandler, errorHandler) {
+			\$http.get("http://" + boardUrl + "/" + path).success(function(response) {
+				checkStatus();
+			});
+		}
+	}]);
 	
-%>
+	</script>
+	<%
+		String htmlOutput = htmlTemplateUtils.replacePropertiesWithValuesForEachChildNode(node.getNodeUri());
+		out.println(htmlOutput);
+		
+	%>
 
 	<script>
-		var ui = angular.module("ui", ['ui.bootstrap', <% out.println(htmlTemplateUtils.getModulesToImportString())%> ]);
-		ui.controller("RootCtrl", ['\$scope', '\$http', '\$interval', '\$location', function(\$scope, \$http, \$interval, \$location) {
-			var boardUrl = (\$location.search().boardUrl != undefined ? \$location.search().boardUrl : "");
-			var baseUrl = "";
-			\$scope.status = {};
-			// TODO REVIEW: pana la urma tot nu ne-am inteles. Trebuie sa ai un "baseUrl". Daca nu am nimic in queryString => e ""; daca am ceva (e.g. 192.168.1.1) => "http://192.168.1.1/"            
-			if (boardUrl != "") {
-				baseUrl = 'http://' + boardUrl + '/';
-			}
-			
-			\$scope.getBoardUrl = function(appendableQueryString){
-				return baseUrl + appendableQueryString;
-			}
-			
-			var checkStatus = function() {
-				\$http.get(\$scope.getBoardUrl("getState")).success(function(status) {
-					\$scope.status = status;
-				})
-			};
-			//\$interval(checkStatus, 1000);			
-			checkStatus();
-			\$scope.invoke = function(path, successHandler, errorHandler) {
-				\$http.get("http://" + boardUrl + "/" + path).success(function(response) {
-					checkStatus();
-				});
-			}
-		}]);
-		
 		<% out.println(htmlTemplateUtils.getContentOfFilesToEmbedString()) %>
 	</script>
 </body>
