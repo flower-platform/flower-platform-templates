@@ -89,7 +89,12 @@ for (child in nodeService.getChildren(node.getNodeUri(), null)) {
 <% // def ${utils.getEventHandlerFunctionName(childName, eventName)}(${utils.getEventHandlerParamListAsString(eventNode)}): 
 %>
 def ${utils.getEventHandlerFunctionName(childName, eventName)}(event): 
-    # TODO Generate code here
+<%
+	def generatedCode = blocklyToPythonConverter.convert(eventNode);
+	if (generatedCode != null) {
+		//Print out the code, but with an indentation of 1 tab.
+		out.print(generatedCode.toString(1));
+	}%>
     pass
 <%
 
