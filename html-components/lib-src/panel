@@ -1,6 +1,0 @@
-<div class="panel panel-primary text-center" style="width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;"  >
-	<div class="panel-heading">$fp.heading</div>
-	<div class="panel-body">
-			$fp.children		
-	</div>
-</div>

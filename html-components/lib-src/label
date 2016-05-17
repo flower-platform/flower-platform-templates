@@ -1,2 +1,0 @@
-<span class="label label-default" style="width: $fp.width; margin-right: $fp.space right; margin-left: $fp.space left;">$fp.text</span>
-<br/>
