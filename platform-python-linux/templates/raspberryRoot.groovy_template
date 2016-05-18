@@ -61,8 +61,21 @@ generationSession.scope.put("utils", new org.flowerplatform.codesync.template_ne
 import sys
 import time
 import RPi.GPIO as GPIO
-from Input import Input
-from Output import Output
+
+<%	import org.flowerplatform.util.Pair; 
+	Pair<String, String>[] imports = templateUtils.getImports(node.getNodeUri());
+	for (Pair<String, String> importPair : imports) {
+		// in python when import files we must not include .py extension like cpp (.h, .c, .cpp)
+		def fileName = importPair.a.replace(".py", "");
+		def componentName = importPair.b;
+		if (componentName != templateUtils.INITIAL_IMPORT) {
+			%>from ${fileName} import ${componentName}\r\n<%
+		} else {
+			%>import ${fileName}\r\n<%
+		}
+	}
+%>
+
 
 <%
 //Declaring the components

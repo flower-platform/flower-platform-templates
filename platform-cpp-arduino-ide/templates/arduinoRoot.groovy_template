@@ -62,9 +62,11 @@ generationSession.scope.put("utils", new org.flowerplatform.codesync.template_ne
 #include <stdbool.h>
 #include <Timer.h>
 
-<%
-	String[] imports = templateUtils.getImports(node.getNodeUri());
-	for (def fileName : imports) {
+<%	import org.flowerplatform.util.Pair;
+	Pair<String, String>[] imports = templateUtils.getImports(node.getNodeUri());
+	for (Pair<String, String> importPair : imports) {
+		def fileName = importPair.a;
+
 %>#include <${fileName}>\r\n<%
 	}
 %>
