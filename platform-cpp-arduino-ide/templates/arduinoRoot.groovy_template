@@ -103,7 +103,19 @@ void ${utils.getEventHandlerFunctionName(childName, eventName)}(${utils.getEvent
 	}
 }
 %>
-
+void toRename(){
+<% 
+	def root_model = resourceService.subscribeToParentResource(nodeService.getParent(node.nodeUri, null).nodeUri).rootNode;
+	def uiRepoName = root_model.getPropertyValue("uiRepository");
+	def componentsRootNodeOfUiRepo = nodeService.navigateByType("fpp:" +  uiRepoName + "|.flower-platform", ["dynamic_default__componentsRoot"]);
+	def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, "default", false, null)[0].content;
+	htmlCompressor.setCompressCss(true);               
+	htmlCompressor.setCompressJavaScript(true);
+	def minifiedcode = htmlCompressor.compress(generatedUiCode);
+	for(item in utils.split(minifiedcode)){%>	
+		out.write_P(PSTR(<%print '"' + item  + '"'%>));
+<%	}%>
+}
 void setup() {
 	Serial.begin(115200);
 	
