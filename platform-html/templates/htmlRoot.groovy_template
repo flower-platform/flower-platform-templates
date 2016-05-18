@@ -72,5 +72,9 @@
 	<%
 		out.println(htmlOutput);		
 	%>
+	<div class="row">
+		<div class=" col-md-8 col-md-offset-4"><span class="label label-default"><span class="glyphicon glyphicon-dashboard"></span> Free memory (SRAM): {{status.freeMem}} bytes</span>
+		</div>
+	</div>
 </body>
 </html>
