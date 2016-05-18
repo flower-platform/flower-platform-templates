@@ -1,4 +1,4 @@
 root = dynamic_default__componentsRoot
 label = default
 gen_files = $PARENT_DIR.py:raspberryRoot
-gen_files_once = CustomCode.h:raspberryCustomCode
+gen_files_once = CustomCode.py:raspberryCustomCode

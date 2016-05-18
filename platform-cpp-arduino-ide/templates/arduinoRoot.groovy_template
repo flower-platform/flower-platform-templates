@@ -57,16 +57,19 @@ generationSession.scope.put("utils", new org.flowerplatform.codesync.template_ne
 	}
 });
 
-%>
-
-#include <Arduino.h>
-#include <FlowerPlatformArduinoRuntime.h>
+%>#include <Arduino.h>
 #include <HardwareSerial.h>
-#include <Input.h>
-#include <Output.h>
 #include <stdbool.h>
 #include <Timer.h>
 
+<%	import org.flowerplatform.util.Pair;
+	Pair<String, String>[] imports = templateUtils.getImports(node.getNodeUri());
+	for (Pair<String, String> importPair : imports) {
+		def fileName = importPair.a;
+
+%>#include <${fileName}>\r\n<%
+	}
+%>
 <%
 //Declaring the components
 for (child in nodeService.getChildren(node.getNodeUri(), null)) { 

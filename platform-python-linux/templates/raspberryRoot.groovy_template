@@ -61,8 +61,21 @@ generationSession.scope.put("utils", new org.flowerplatform.codesync.template_ne
 import sys
 import time
 import RPi.GPIO as GPIO
-from Input import Input
-from Output import Output
+
+<%	import org.flowerplatform.util.Pair; 
+	Pair<String, String>[] imports = templateUtils.getImports(node.getNodeUri());
+	for (Pair<String, String> importPair : imports) {
+		// in python when import files we must not include .py extension like cpp (.h, .c, .cpp)
+		def fileName = importPair.a.replace(".py", "");
+		def componentName = importPair.b;
+		if (componentName != templateUtils.INITIAL_IMPORT) {
+			%>from ${fileName} import ${componentName}\r\n<%
+		} else {
+			%>import ${fileName}\r\n<%
+		}
+	}
+%>
+
 
 <%
 //Declaring the components
@@ -89,7 +102,12 @@ for (child in nodeService.getChildren(node.getNodeUri(), null)) {
 <% // def ${utils.getEventHandlerFunctionName(childName, eventName)}(${utils.getEventHandlerParamListAsString(eventNode)}): 
 %>
 def ${utils.getEventHandlerFunctionName(childName, eventName)}(event): 
-    # TODO Generate code here
+<%
+	def generatedCode = blocklyToPythonConverter.convert(eventNode);
+	if (generatedCode != null) {
+		//Print out the code, but with an indentation of 1 tab.
+		out.print(generatedCode.toString(1));
+	}%>
     pass
 <%
 
@@ -160,7 +178,7 @@ if __name__ == '__main__' :
     setup()
     start()
 
-
+import CustomCode
 
 
 
