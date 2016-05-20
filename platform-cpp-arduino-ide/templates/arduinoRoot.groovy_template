@@ -60,7 +60,6 @@ generationSession.scope.put("utils", new org.flowerplatform.codesync.template_ne
 %>#include <Arduino.h>
 #include <HardwareSerial.h>
 #include <stdbool.h>
-#include <Timer.h>
 
 <%	import org.flowerplatform.util.Pair;
 	Pair<String, String>[] imports = templateUtils.getImports(node.getNodeUri());
@@ -115,10 +114,10 @@ void toRename(){
 	htmlCompressor.setCompressCss(true);               
 	htmlCompressor.setCompressJavaScript(true);
 	def minifiedcode = htmlCompressor.compress(generatedUiCode);
-	for(item in utils.split(minifiedcode)){%>	
-		out.write_P(PSTR(<%print '"' + item  + '"'%>));
-<%	}%>
-}
+	for (item in utils.split(minifiedcode)) {
+%>	out.write_P(PSTR("<%= item %>)");
+<%	}%>}
+
 void setup() {
 	Serial.begin(115200);
 	
