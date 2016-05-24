@@ -105,7 +105,8 @@ void ${utils.getEventHandlerFunctionName(childName, eventName)}(${utils.getEvent
 	}
 }
 %>
-void toRename(){
+void toRename(Print *p) {
+	BufferedPrint out(p);
 <% 
 	def root_model = resourceService.subscribeToParentResource(nodeService.getParent(node.nodeUri, null).nodeUri).rootNode;
 	def uiRepoName = root_model.getPropertyValue("uiRepository");
@@ -115,11 +116,36 @@ void toRename(){
 	htmlCompressor.setCompressJavaScript(true);
 	def minifiedcode = htmlCompressor.compress(generatedUiCode);
 	for (item in utils.split(minifiedcode)) {
-%>	out.write_P(PSTR("<%= item %>)");
+%>	out.write_P(PSTR("<%= item %>)"));
 <%	}%>}
+
+/** hardcoded -> */
+void httpServer_onCommandReceived(HttpCommandEvent* event) { 
+	event->server->httpSuccess(event->client, HttpServer::CONTENT_TYPE_HTML);
+	toRename(event->client);
+}
+/** <- hardcoded */
 
 void setup() {
 	Serial.begin(115200);
+	
+/** hardcoded -> */
+	httpServer.port = 80;
+	httpServer.onCommandReceived = httpServer_onCommandReceived;
+	networkAdapter.protocolHandler = &httpServer;
+	
+	uint8_t ipAddress[] = { 192, 168, 100, 250 };
+	memcpy(networkAdapter.ipAddress, ipAddress, 4);	
+
+// Ethernet	
+//	uint8_t macAddress[] = { 0xDA, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+//	memcpy(networkAdapter.macAddress, macAddress, 6);	
+
+// WiFi
+	networkAdapter.ssid = "ssid-here";
+	networkAdapter.password = "password-here";
+	
+/** <- hardcoded */
 	
 <%
 	//Property initialisation section.
@@ -182,4 +208,4 @@ void loop() {
 %>
 }
 
-#include "CustomCode.h"
+//#include "CustomCode.h"
