@@ -2,6 +2,9 @@
 import org.flowerplatform.util.Utils;
 import org.flowerplatform.util.UtilConstants;
 import org.flowerplatform.arduino.ArduinoNodeConstants;
+import org.flowerplatform.core.nature.MainModelNature;
+import org.flowerplatform.core.CoreNodeConstants;
+import org.flowerplatform.core.CoreConstants;
 
 final PROPERTY_NAME = "name";
 
@@ -107,10 +110,12 @@ void ${utils.getEventHandlerFunctionName(childName, eventName)}(${utils.getEvent
 %>
 void toRename(){
 <% 
-	def root_model = resourceService.subscribeToParentResource(nodeService.getParent(node.nodeUri, null).nodeUri).rootNode;
-	def uiRepoName = root_model.getPropertyValue("uiRepository");
-	def componentsRootNodeOfUiRepo = nodeService.navigateByType("fpp:" +  uiRepoName + "|.flower-platform", ["dynamic_default__componentsRoot"]);
-	def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, "default", false, null)[0].content;
+	def rootNode = nodeService.getParent(node.nodeUri, null);
+	def uiRepoName = rootNode.getPropertyValue("uiRepository");
+	def uiRepoRootNode = MainModelNature.getMainModel(uiRepoName);
+	def componentsRootNodeOfUiRepo = nodeService.navigateByType(uiRepoRootNode.nodeUri, [CoreNodeConstants.TYPE_COMPONENTS_ROOT]);
+	def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, CoreConstants.DEFAULT, false, null)[0].content;
+	
 	htmlCompressor.setCompressCss(true);               
 	htmlCompressor.setCompressJavaScript(true);
 	def minifiedcode = htmlCompressor.compress(generatedUiCode);
