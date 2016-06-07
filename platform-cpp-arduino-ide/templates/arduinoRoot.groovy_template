@@ -21,9 +21,8 @@ def componentsNode = nodeService.navigateByType(node.nodeUri, ['componentsRoot']
 	Pair<String, String>[] imports = templateUtils.getImports(componentsNode.getNodeUri());
 	for (Pair<String, String> importPair : imports) {
 		def fileName = importPair.a;
-
-%>#include <${fileName}>\r\n<%
-	}
+%>#include <${fileName}>
+<%	}
 %>
 
 class AppGen {
@@ -32,19 +31,49 @@ public:
 <%
 def httpServer = null;
 
+def convertDataType(type) {
+	if (type == null) {
+		return "void";
+	}
+	switch(type) {
+		case "String": return "const char*";
+		default: return type;
+	}
+}
+
 // Components declaration
 for (instance in rappStructureService.getInstances(rappId)) { 
-%>	$instance.type $instance.name;\r\n<%
-	if (instance.type == "HttpServer") {
+%>	$instance.type $instance.name;
+<%	if (instance.type == "HttpServer") {
 		httpServer = instance;
 	}
 }
-%>\r\n<%
+%>
+<% 
+// Functions
+for (function in rappStructureService.getFunctions(rappId)) {
+	def functionName = function.name.substring(0, function.name.indexOf("("));
+	def functionDeclaration = convertDataType(function.type) + " " + functionName + "(";
+	for (param in function.parameters) {
+		def paramName = param.name.substring(0, param.name.indexOf(":"));
+		functionDeclaration += convertDataType(param.type) + " " + paramName + ", ";
+	}
+	if(function.parameters.size() > 0) {
+		functionDeclaration = functionDeclaration[0..-3];
+	}
+	functionDeclaration += ")";
+%>	$functionDeclaration {
+		// blockly code here
+	}
+
+<% 
+}
+
 // Event handlers
 for (instance in rappStructureService.getInstances(rappId)) { 
 	def componentModel = componentService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
-%>	void ${instance.name}_${eventHandler.name}(${componentModel.getEventByName(eventHandler.name).getType()} event) {
+%>	void ${instance.name}_${eventHandler.name}(${componentModel.getEventByName(eventHandler.name).getType()}* event) {
 		// blockly code here
 	}
 <%	} // end for loop events
@@ -67,23 +96,38 @@ if (httpServer != null) {   /****************************************** HttpServ
 		
 		BufferedPrint out(event->client);
 		if (strcmp_P(command, PSTR("")) == 0) {
-			urlFound = true;
+			event->server->httpSuccess(&out, HttpServer::CONTENT_TYPE_HTML);
 <% 
 	for (item in utils.split(minifiedcode)) {
-%>			out.write_P(PSTR("$item")));\r\n <%
-	} 
+%>			out.write_P(PSTR("$item"));
+<%	}
+%>			out.flush();
+			return;
+<% 
 	for (function in rappStructureService.getFunctions(rappId)) {
 		if (!function.accessibleViaWeb) {
 			continue;
 		}
-		def functionName = function.name;
-		functionName = functionName.substring(0, functionName.indexOf("("));
-%>		} else if (strcmp_P(command, PSTR("$functionName")) == 0) { <%
-%>			${functionName}();<%
-		def functionCall = functionName + "(";
+		def functionName = function.name.substring(0, function.name.indexOf("("));
+%>		} else if (strcmp_P(command, PSTR("$functionName")) == 0) {
+			urlFound = true;
+<%		def functionCall = functionName + "(";
 		for (param in function.parameters) {
-		} 
-	}
+			def paramName = param.name.substring(0, param.name.indexOf(":"));
+			functionCall += paramName + ", ";
+			if (param.type == "String") {
+%>			char $paramName[32];
+			event->server->getStringParameterValue(event->url, "$paramName", $paramName);
+<%			} else {
+%>			int $paramName = event->server->getIntParameterValue(event->url, "$paramName");
+<%			}
+		}
+		if(function.parameters.size() > 0) {
+			functionCall = functionCall[0..-3];
+		}
+		functionCall += ");"
+%>			$functionCall
+<%	}
 %>		} else if (strcmp_P(command, PSTR("getState")) == 0) {
 			urlFound = true;
 		}
@@ -109,24 +153,46 @@ for (instance in rappStructureService.getInstances(rappId)) {
 			continue;
 		}
 		if (property.type == "char") {
-	%>		${instance.name}.$property.name = "$propertyValue";\r\n<% 
-		} else if (property.pointer) {
-	%>		${instance.name}.$property.name = &$propertyValue;\r\n<% 
-		} else {
-	%>		${instance.name}.$property.name = $propertyValue;\r\n<% 
-		}	
+%>		${instance.name}.$property.name = "$propertyValue";
+<% 		} else if (property.pointer) {
+%>		${instance.name}.$property.name = &$propertyValue;
+<% 		} else {
+%>		${instance.name}.$property.name = $propertyValue;
+<% 		}	
 	}
 	// set event handlers
 	for (eventHandler in instance.eventHandlers) {
 		def eventArgumentClass = componentModel.getEventByName(eventHandler.name).getType();
-%>		${instance.name}.${eventHandler.name} = new DelegatingCallback<AppGen, ${eventArgumentClass}>(this, &AppGen::${instance.name}_${eventHandler.name}); <%
-	}
-%>\r\n<%
-}%>
-	}
+%>		${instance.name}.${eventHandler.name} = new DelegatingCallback<AppGen, ${eventArgumentClass}>(this, &AppGen::${instance.name}_${eventHandler.name}); 
+<%	}
+	if (instance.name == httpServer.name) {
+%>		${instance.name}.onCommandReceived = new DelegatingCallback<AppGen, HttpCommandEvent>(this, &AppGen::${instance.name}_onCommandReceived); 
+<%	}
+%>
+<% 
+}
+for (instance in rappStructureService.getInstances(rappId)) { 
+%>		${instance.name}.setup();
+<%}
+%>	}
 
 	void loop() {
-		
-	}
+<% 
+for (instance in rappStructureService.getInstances(rappId)) { 
+%>		${instance.name}.loop();
+<% 
+}
+%>	}
 	
+};
+
+AppGen app;
+
+void setup() {
+	Serial.begin(115200);
+	app.setup();
+}
+
+void loop() {
+	app.loop();
 }
