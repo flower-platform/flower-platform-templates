@@ -1,0 +1,51 @@
+===========================================================================================================
+Rapp Structure
+===========================================================================================================
+Instances and Event Handlers
+<% 
+import org.flowerplatform.util.Utils;
+import org.flowerplatform.core.CoreNodeConstants;
+
+def rappId = Utils.getRepo(node.nodeUri);
+def platformId = node.getPropertyValue(CoreNodeConstants.PROPERTY_CONFIG_REPOSITORY_SETS);
+
+for (instance in rappStructureService.getInstances(rappId)) { 
+%>	$instance.name: <%= componentService.getComponentByName(platformId, instance.type) %>
+<%
+	for (eventHandler in instance.eventHandlers) {
+%>		$eventHandler.name
+<%
+	}
+} 
+%>
+Variables
+<%
+for (var in rappStructureService.getVariables(rappId)) {
+%>	$var.name:$var.type
+<% } %>
+Functions
+<%
+for (function in rappStructureService.getFunctions(rappId)) {
+%>	$function.name():$function.type; accessibleViaWeb = $function.accessibleViaWeb
+<%
+	for (param in function.parameters) {
+%>		$param.name:$param.type
+<%
+	}
+} 
+def type = "MyComponent3";
+def component = componentService.getComponentByName(platformId, type);
+%>
+===========================================================================================================
+Type Structure for $type
+===========================================================================================================
+Properties:
+<%
+for (property in component.getAllProperties()) {
+%>	$property; pointer = $property.pointer
+<% } %>
+Events:
+<%
+for (property in component.getAllEvents()) {
+%>	$property
+<% } %>

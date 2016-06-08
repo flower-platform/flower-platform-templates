@@ -1,4 +1,4 @@
-root = dynamic_default__componentsRoot
+root = dynamic_root
 label = default
 gen_files = $PARENT_DIR.ino:arduinoRoot
 gen_files_once = CustomCode.h:arduinoCustomCode
