@@ -61,7 +61,7 @@
 		//\$interval(checkStatus, 1000);			
 		checkStatus();
 		\$scope.invoke = function(path, successHandler, errorHandler) {
-			\$http.get("http://" + boardUrl + "/" + path).success(function(response) {
+			\$http.get(\$scope.getBoardUrl(path)).success(function(response) {
 				checkStatus();
 			});
 		}
