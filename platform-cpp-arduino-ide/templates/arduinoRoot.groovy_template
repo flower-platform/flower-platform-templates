@@ -128,23 +128,68 @@ if (httpServer != null) {   /****************************************** HttpServ
 		functionCall += ");"
 %>			$functionCall
 <%	}
-%>		} else if (strcmp_P(command, PSTR("getState")) == 0) {
+%>		} else if (strcmp_P(command, PSTR("getDescriptors")) == 0) {
+			printDescriptorsAsJson(&out);
+			out.flush();
+			return;
+		} else if (strcmp_P(command, PSTR("getState")) == 0) {
 			urlFound = true;
 		}
 		
 		if (urlFound) {
 			event->server->httpSuccess(&out);
-			//printStateAsJson(&out);
+			printStateAsJson(&out);
 		} else {
 			event->server->httpError404(&out);
 		}
 		out.flush();
 	}
-<%
+	
+	void printDescriptorsAsJson(Print* print) {
+		print->print(F("{\"inputs\":["));
+<%		
+	def first = true;
+	for (instance in rappStructureService.getInstances(rappId)) { 
+		if (instance.getPropertyValue("contributesToState")) {
+%>		print->print(F("<%= first ? "" : "," %>{\"label\":\"${instance.name}\", \"property\":\"${instance.name}\"}"));
+<% 			first = false;
+		}
+	}
+%>
+		print->print(F("],\"commands\":["));
+<%	
+	first = true;
+	for (function in rappStructureService.getFunctions(rappId)) {
+		if (function.accessibleViaWeb) {
+			def functionName = function.name.substring(0, function.name.indexOf("("));
+%>		print->print(F("<%= first ? "" : "," %>{\"label\":\"${functionName}\", \"command\":\"${functionName}\"}"));
+<% 			first = false;
+		}
+	}
+	%>		
+		print->print(F("]}"));
+
+	}
+	
+	void printStateAsJson(Print* print) {
+		print->print(F("{"));
+<%		
+	for (instance in rappStructureService.getInstances(rappId)) { 
+		if (instance.getPropertyValue("contributesToState")) {
+%>		${instance.name}.printStateAsJson(F("${instance.name}"), print);
+		print->print(F(","));
+<%		}
+	} 
+%>	
+		write_P(print, PSTR("\"FREE_MEM\": "));
+		print->print(freeRam());
+		print->print("}");
+	}
+<% 
 } // end if httpServer   	/*******************************************************************************************************/
 %>
 	void setup() {
-<%
+<% 
 for (instance in rappStructureService.getInstances(rappId)) { 
 	def componentModel = componentService.getComponentByName(platformId, instance.type);
 	for (property in componentModel.getAllProperties()) {
