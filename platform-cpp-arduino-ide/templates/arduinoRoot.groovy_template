@@ -13,6 +13,26 @@ def platformId = node.getPropertyValue(CoreNodeConstants.PROPERTY_CONFIG_REPOSIT
 
 def componentsNode = nodeService.navigateByType(node.nodeUri, ['componentsRoot']);
 
+// html UI
+def uiRepoName = node.getPropertyValue("uiRepository");
+def uiRepoRootNode = MainModelNature.getMainModel(uiRepoName);
+def componentsRootNodeOfUiRepo = nodeService.navigateByType(uiRepoRootNode.nodeUri, [CoreNodeConstants.TYPE_COMPONENTS_ROOT]);
+def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, CoreConstants.DEFAULT, false, null)[0].content;
+htmlCompressor.setCompressCss(true);               
+htmlCompressor.setCompressJavaScript(true);
+def minifiedcode = htmlCompressor.compress(generatedUiCode);
+def htmlArray = templateUtils.bytesToHexArray(templateUtils.gzip(minifiedcode), 512, 4);
+
+def convertDataType(type) {
+	if (type == null) {
+		return "void";
+	}
+	switch(type) {
+		case "String": return "const char*";
+		default: return type;
+	}
+}
+
 %>#include <Arduino.h>
 #include <HardwareSerial.h>
 #include <stdbool.h>
@@ -27,19 +47,9 @@ def componentsNode = nodeService.navigateByType(node.nodeUri, ['componentsRoot']
 
 class AppGen {
 public: 
-
+	
 <%
 def httpServer = null;
-
-def convertDataType(type) {
-	if (type == null) {
-		return "void";
-	}
-	switch(type) {
-		case "String": return "const char*";
-		default: return type;
-	}
-}
 
 // Components declaration
 for (instance in rappStructureService.getInstances(rappId)) { 
@@ -80,14 +90,6 @@ for (instance in rappStructureService.getInstances(rappId)) {
 } // end for loop instances
 
 if (httpServer != null) {   /****************************************** HttpServer ************************************************/
-	def uiRepoName = node.getPropertyValue("uiRepository");
-	def uiRepoRootNode = MainModelNature.getMainModel(uiRepoName);
-	def componentsRootNodeOfUiRepo = nodeService.navigateByType(uiRepoRootNode.nodeUri, [CoreNodeConstants.TYPE_COMPONENTS_ROOT]);
-	def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, CoreConstants.DEFAULT, false, null)[0].content;
-	
-	htmlCompressor.setCompressCss(true);               
-	htmlCompressor.setCompressJavaScript(true);
-	def minifiedcode = htmlCompressor.compress(generatedUiCode);
 %>
 	void ${httpServer.name}_onCommandReceived(HttpCommandEvent* event) {
 		char command[32];
@@ -96,12 +98,12 @@ if (httpServer != null) {   /****************************************** HttpServ
 		
 		BufferedPrint out(event->client);
 		if (strcmp_P(command, PSTR("")) == 0) {
-			event->server->httpSuccess(&out, HttpServer::CONTENT_TYPE_HTML);
-<% 
-	for (item in utils.split(minifiedcode)) {
-%>			out.write_P(PSTR("$item"));
-<%	}
-%>			out.flush();
+			event->server->httpSuccess(&out, HttpServer::CONTENT_TYPE_HTML, true);
+			static const uint8_t HTML_PAGE[] PROGMEM = {
+$htmlArray
+			};
+			out.write_P(HTML_PAGE, (sizeof(HTML_PAGE)/sizeof(*HTML_PAGE)));
+			out.flush();
 			return;
 <% 
 	for (function in rappStructureService.getFunctions(rappId)) {
