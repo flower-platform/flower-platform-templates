@@ -49,6 +49,16 @@
 			baseUrl = 'http://' + boardUrl + '/';
 		}
 		
+		function createParamsStringForUrl(paramArray) {
+			var result = "";
+			var i  = 0;
+			for (i = 0; i < paramArray.length - 1; i++) {
+				result = result + paramArray[i].name + "=" + paramArray[i].value + "&";
+			}
+			result = result + paramArray[i].name + "=" + paramArray[i].value;
+			return result;
+		}
+		
 		\$scope.getBoardUrl = function(appendableQueryString){
 			return baseUrl + appendableQueryString;
 		}
@@ -60,8 +70,8 @@
 		};
 		//\$interval(checkStatus, 1000);			
 		checkStatus();
-		\$scope.invoke = function(path, successHandler, errorHandler) {
-			\$http.get(\$scope.getBoardUrl(path)).success(function(response) {
+		\$scope.invoke = function(command, successHandler, errorHandler) {
+			\$http.get(\$scope.getBoardUrl(command.name + "?" + createParamsStringForUrl(command.parameters))).success(function(response) {
 				checkStatus();
 			});
 		}
