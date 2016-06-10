@@ -75,7 +75,7 @@
 		checkStatus();
 		\$scope.invoke = function(command, successHandler, errorHandler) {
 			\$http.get(\$scope.getBoardUrl(command.name + createParamsStringForUrl(command.parameters))).success(function(response) {
-				checkStatus();
+				\$scope.status = response;
 			});
 		}
 	<%=htmlTemplateUtils.getContentOfFilesToEmbedString()%>	
