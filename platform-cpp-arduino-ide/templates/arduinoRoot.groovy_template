@@ -72,8 +72,10 @@ for (function in rappStructureService.getFunctions(rappId)) {
 		functionDeclaration = functionDeclaration[0..-3];
 	}
 	functionDeclaration += ")";
+	def code = blocklyToCppConverter.convert(function.blocklyContent);
+	code = (code == null ? "" : code.toString(2));
 %>	$functionDeclaration {
-		// blockly code here
+$code
 	}
 
 <% 
@@ -83,8 +85,10 @@ for (function in rappStructureService.getFunctions(rappId)) {
 for (instance in rappStructureService.getInstances(rappId)) { 
 	def componentModel = componentService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
+		def code = blocklyToCppConverter.convert(eventHandler.blocklyContent);
+		code = (code == null ? "" : code.toString(2));
 %>	void ${instance.name}_${eventHandler.name}(${componentModel.getEventByName(eventHandler.name).getType()}* event) {
-		// blockly code here
+$code
 	}
 <%	} // end for loop events
 } // end for loop instances
@@ -164,7 +168,13 @@ $htmlArray
 	for (function in rappStructureService.getFunctions(rappId)) {
 		if (function.accessibleViaWeb) {
 			def functionName = function.name.substring(0, function.name.indexOf("("));
-%>		print->print(F("<%= first ? "" : "," %>{\"label\":\"${functionName}\", \"command\":\"${functionName}\"}"));
+			def paramList = "";
+			def firstParam = true;
+			for (param in function.parameters) {
+				paramList += (firstParam ? "" : "; ") + param.name.substring(0, param.name.indexOf(":")) + ":" + param.type;
+				firstParam = false;
+			}
+%>		print->print(F("<%= first ? "" : "," %>{\"label\":\"${functionName}\", \"command\":\"${functionName}\", \"parameters\":\"${paramList}\"}"));
 <% 			first = false;
 		}
 	}
@@ -183,7 +193,7 @@ $htmlArray
 <%		}
 	} 
 %>	
-		write_P(print, PSTR("\"FREE_MEM\": "));
+		write_P(print, PSTR("\"freeMem\": "));
 		print->print(freeRam());
 		print->print("}");
 	}
