@@ -47,20 +47,7 @@
 		\$scope.status = {};     
 		if (boardUrl != "") {
 			baseUrl = 'http://' + boardUrl + '/';
-		}
-		
-		function createParamsStringForUrl(paramArray) {
-			if (paramArray == undefined) {
-				return "";
-			}
-			var result = "?";
-			var i  = 0;
-			for (i = 0; i < paramArray.length - 1; i++) {
-				result = result + paramArray[i].name + "=" + paramArray[i].value + "&";
-			}
-			result = result + paramArray[i].name + "=" + paramArray[i].value;
-			return result;
-		}
+		}		
 		
 		\$scope.getBoardUrl = function(appendableQueryString){
 			return baseUrl + appendableQueryString;
@@ -71,16 +58,17 @@
 				\$scope.status = status;
 			})
 		};
+
 		//\$interval(checkStatus, 1000);			
 		checkStatus();
-		\$scope.invoke = function(command, successHandler, errorHandler) {
-			\$http.get(\$scope.getBoardUrl(command.name + createParamsStringForUrl(command.parameters))).success(function(response) {
+
+		\$scope.invoke = function(commandPath, successHandler, errorHandler) {
+			\$http.get(commandPath).success(function(response) {
 				\$scope.status = response;
 			});
 		}
 	<%=htmlTemplateUtils.getContentOfFilesToEmbedString()%>	
-	}]);
-	
+	}]);	
 	</script>
 	<%=htmlOutput%>
 	<div class="row">
