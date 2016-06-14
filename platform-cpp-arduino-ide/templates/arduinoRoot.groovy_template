@@ -28,7 +28,7 @@ def convertDataType(type) {
 		return "void";
 	}
 	switch(type) {
-		case "String": return "const char*";
+		case "string": return "const char*";
 		default: return type;
 	}
 }
@@ -57,6 +57,14 @@ for (instance in rappStructureService.getInstances(rappId)) {
 <%	if (instance.type == "HttpServer") {
 		httpServer = instance;
 	}
+}
+%>
+<%
+for (var in rappStructureService.getVariables(rappId)) {
+	def varName = var.name.substring(0, var.name.indexOf(":"));
+	def varType = convertDataType(var.type);
+%>	$varType $varName;
+<% 
 }
 %>
 <% 
