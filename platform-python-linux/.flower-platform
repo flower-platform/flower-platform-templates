@@ -67,6 +67,18 @@
 <attribute NAME="value" VALUE="arduino"/>
 <attribute NAME="behaviorType" VALUE="contentType"/>
 </node>
+<node TEXT="" ID="ID_1577246057" CREATED="1466590536195" MODIFIED="1466590536195">
+<attribute NAME="nodeType" VALUE="propertyDescriptor"/>
+<attribute NAME="propertyGroup" VALUE=""/>
+<attribute NAME="propertyType" VALUE="String"/>
+<attribute NAME="orderIndex" VALUE="-2.147483648E9" OBJECT="java.lang.Double|-2.147483648E9"/>
+<attribute NAME="name" VALUE="uiRepository"/>
+<attribute NAME="label" VALUE="Rapp for User Interface"/>
+<attribute NAME="propertyEmptyEqualsNull" VALUE="true" OBJECT="java.lang.Boolean|true"/>
+<attribute NAME="propertyLineRenderer" VALUE="Default"/>
+<attribute NAME="type" VALUE="propertyDescriptor"/>
+<attribute NAME="propertyDefaultValue" VALUE="flower-platform-libs/generic-ui"/>
+</node>
 </node>
 </node>
 </node>
