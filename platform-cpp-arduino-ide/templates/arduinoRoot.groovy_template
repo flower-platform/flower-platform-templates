@@ -95,7 +95,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 	for (eventHandler in instance.eventHandlers) {
 		def code = blocklyToCppConverter.convert(eventHandler.blocklyContent);
 		code = (code == null ? "" : code.toString(2));
-%>	void ${instance.name}_${eventHandler.name}(${componentModel.getEventByName(eventHandler.name).getType()}* event) {
+%>	void ${instance.name}_${eventHandler.name}(${componentModel.getEventByName(eventHandler.name).getType()} event) {
 $code
 	}
 <%	} // end for loop events
@@ -129,7 +129,7 @@ $htmlArray
 		for (param in function.parameters) {
 			def paramName = param.name.substring(0, param.name.indexOf(":"));
 			functionCall += paramName + ", ";
-			if (param.type == "String") {
+			if (param.type == "string") {
 %>			char $paramName[32];
 			event->server->getStringParameterValue(event->url, "$paramName", $paramName);
 <%			} else {
@@ -227,7 +227,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 	}
 	// set event handlers
 	for (eventHandler in instance.eventHandlers) {
-		def eventArgumentClass = componentModel.getEventByName(eventHandler.name).getType();
+		def eventArgumentClass = componentModel.getEventByName(eventHandler.name).getType()[0..-2];
 %>		${instance.name}.${eventHandler.name} = new DelegatingCallback<AppGen, ${eventArgumentClass}>(this, &AppGen::${instance.name}_${eventHandler.name}); 
 <%	}
 	if (instance.name == httpServer.name) {
