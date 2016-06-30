@@ -93,8 +93,11 @@ $code
 for (instance in rappStructureService.getInstances(rappId)) { 
 	def componentModel = componentService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
-		def code = blocklyToCppConverter.convert(eventHandler.blocklyContent);
-		code = (code == null ? "" : code.toString(2));
+	def code = null;
+	if (eventHandler.blocklyContent != null) {
+		code = blocklyToCppConverter.convert(eventHandler.blocklyContent);
+	}
+	code = (code == null ? "" : code.toString(2));
 %>	void ${instance.name}_${eventHandler.name}(${componentModel.getEventByName(eventHandler.name).getType()}* event) {
 $code
 	}
@@ -249,7 +252,9 @@ for (instance in rappStructureService.getInstances(rappId)) {
 	
 };
 
-AppGen app;
+#include "CustomCode.h"
+
+App app;
 
 void setup() {
 	Serial.begin(115200);
