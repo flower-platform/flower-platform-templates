@@ -2,196 +2,255 @@
 import org.flowerplatform.util.Utils;
 import org.flowerplatform.util.UtilConstants;
 import org.flowerplatform.arduino.ArduinoNodeConstants;
+import org.flowerplatform.core.nature.MainModelNature;
+import org.flowerplatform.core.CoreNodeConstants;
+import org.flowerplatform.core.CoreConstants;
 
 final PROPERTY_NAME = "name";
-generationSession.scope.put("utils", new org.flowerplatform.codesync.template_new.TemplateUtils(generationSession) {
-	//TODO : check if "null" (as string value, as opposed to the value null) is ok to be returned from node.getPropertyValue();
-	boolean isEmptyString(Object param) {
-		String strValue = String.valueOf(param);
-	
-		return strValue == null || strValue.allWhitespace || "null".equals(strValue);
-// REVIEW: nu inteleg de unde vin cazurile pe care le descrii tu aici. Cred ca e o problema mai adanca. Poti reproduce?
-// e.g. "null"; apoi name = " ": nu cred ca ar trebui sa-l sarim. Va trebui sa lasam (si sa dea eroare). Caci omul si-a pus componentul, dar a uitat sa-i dea nume
-	}
-	
-	//Some property names should be excluded automatically (such as the "name" property, so that we don't end up with stuff like varName.name = varName)
-	//This function returns true if the property name given as parameter should be excluded from processing.
-	boolean excludePropertyName(String propertyName) {
-		String[] excludePropertyNames = [PROPERTY_NAME] as String[];
-		
-		for (String prop : excludePropertyNames) {
-			if (prop.equals(propertyName)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-// REVIEW: nu prea e performanta. Eu as fi facut un set sau map static final. Astfel se verifica rapid. Si de asemenea, se poate scrie intr-o
-// singura linie. new HashMap(Arrays.asList(...));
-	
-	String getEventHandlerFunctionName(String componentName, String eventName) {
-		return componentName + "_" + eventName;
-	}
 
-	String getEventHandlerParamListAsString(Object eventNode) {
-		def paramDescriptorList = behaviorRegistry.getAdditiveControllers(ArduinoNodeConstants.BEHAVIOR_EVENT_PARAMETER, eventNode);
-		StringBuilder result = new StringBuilder();
-	
-		int paramIndex = 0;
-		for (paramDescriptor in paramDescriptorList) {
-			if (result.length() > 0) {
-				result.append(', ');
-			}
-		
-			result.append(paramDescriptor.getValue());
-			result.append(' ');
-			result.append("param");
-			result.append(paramIndex);
-			
-			paramIndex++;
-		}
-		
-		return result.toString();
-	}
-});
+def rappId = Utils.getRepo(node.nodeUri);
+def platformId = node.getPropertyValue(CoreNodeConstants.PROPERTY_CONFIG_REPOSITORY_SETS);
 
-%>
-#!/usr/bin/python
+def componentsNode = nodeService.navigateByType(node.nodeUri, ['componentsRoot']);
+
+def httpServer = null;
+for (instance in rappStructureService.getInstances(rappId)) { 
+	if (instance.type == "HttpServer") {
+		httpServer = instance;
+	}
+}
+
+// html UI
+def uiRepoName = node.getPropertyValue("uiRepository");
+def uiRepoRootNode = MainModelNature.getMainModel(uiRepoName);
+def componentsRootNodeOfUiRepo = nodeService.navigateByType(uiRepoRootNode.nodeUri, [CoreNodeConstants.TYPE_COMPONENTS_ROOT]);
+def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, CoreConstants.DEFAULT, false, null)[0].content;
+htmlCompressor.setCompressCss(true);               
+htmlCompressor.setCompressJavaScript(true);
+def minifiedcode = htmlCompressor.compress(generatedUiCode);
+def htmlArray = templateUtils.bytesToHexArray(templateUtils.gzip(minifiedcode), 512, 4);
+
+def convertDataType(type) {
+	if (type == null) {
+		return "void";
+	}
+	switch(type) {
+		case "string": return "const char*";
+		default: return type;
+	}
+}
+
+%>#!/usr/bin/python
+
+import os
+import signal
 import sys
 import time
 import RPi.GPIO as GPIO
 
-<%	import org.flowerplatform.util.Pair; 
-	Pair<String, String>[] imports = templateUtils.getImports(node.getNodeUri());
+from FlowerPlatformRuntime import ValueChangedEvent
+
+<%	
+	import org.flowerplatform.util.Pair; 
+	Pair<String, String>[] imports = templateUtils.getImports(componentsNode.getNodeUri());
 	for (Pair<String, String> importPair : imports) {
 		// in python when import files we must not include .py extension like cpp (.h, .c, .cpp)
 		def fileName = importPair.a.replace(".py", "");
 		def componentName = importPair.b;
 		if (componentName != templateUtils.INITIAL_IMPORT) {
-			%>from ${fileName} import ${componentName}\r\n<%
+			%>from FlowerPlatformRuntime import ${componentName}\r\n<%
 		} else {
 			%>import ${fileName}\r\n<%
 		}
 	}
 %>
 
-
-<%
-//Declaring the components
-for (child in nodeService.getChildren(node.getNodeUri(), null)) { 
-	def childName = child.getPropertyValue(PROPERTY_NAME);
+class AppGen :
 	
-	//Exclude any component that doesn't have a name
-	if (!utils.isEmptyString(childName)) {
-	
-%>${childName} = ${Utils.getSimpleTypeFromDynamicType(child.getType())}()\r\n<%
-
+<% 
+// Functions
+for (function in rappStructureService.getFunctions(rappId)) {
+	def functionName = function.name.substring(0, function.name.indexOf("("));
+	def functionDeclaration = "def " + functionName + "(self";
+	for (param in function.parameters) {
+		def paramName = param.name.substring(0, param.name.indexOf(":"));
+		functionDeclaration += ", " + paramName;
 	}
+	functionDeclaration += ")";
+	def code;// = blocklyToCppConverter.convert(function.blocklyContent);
+	code = (code == null ? "" : code.toString(2));
+%>	$functionDeclaration :
+<%= code ? code : "\t\treturn" %>
+
+<% 
 }
 
-//Add the corresponding event handler stub implementations.
-for (child in nodeService.getChildren(node.getNodeUri(), null)) {
-	def childName = child.getPropertyValue(PROPERTY_NAME);
+// Event handlers
+for (instance in rappStructureService.getInstances(rappId)) { 
+	def componentModel = componentService.getComponentByName(platformId, instance.type);
+	for (eventHandler in instance.eventHandlers) {
+		def code;// = blocklyToCppConverter.convert(eventHandler.blocklyContent);
+		code = (code == null ? "" : code.toString(2));
+%>	def ${instance.name}_${eventHandler.name}(self, event) :
+<%= code ? code : "\t\treturn" %>
+	
+<%	} // end for loop events
+} // end for loop instances
 
-	for (eventNode in nodeService.getChildren(child.getNodeUri(), null)) {
-		if (behaviorRegistry.belongsToCategory(ArduinoNodeConstants.TYPE_CATEGORY_EVENT, eventNode, null, true, null) ) {
-// REVIEW: nu e luat in considerare cazul 
-			def eventName = eventNode.getPropertyValue(PROPERTY_NAME);
-%>
-<% // def ${utils.getEventHandlerFunctionName(childName, eventName)}(${utils.getEventHandlerParamListAsString(eventNode)}): 
-%>
-def ${utils.getEventHandlerFunctionName(childName, eventName)}(event): 
-<%
-	def generatedCode = blocklyToPythonConverter.convert(eventNode);
-	if (generatedCode != null) {
-		//Print out the code, but with an indentation of 1 tab.
-		out.print(generatedCode.toString(1));
-	}%>
-    pass
-<%
+if (httpServer != null) {   /****************************************** HttpServer ************************************************/
+%>	def ${httpServer.name}_onCommandReceived(self, event) :
+		urlFound = False
+		
+		if (event.url == "") :
+			event.client.send_response(200)
+			event.client.send_header("Content-type", "text/html")
+			event.client.send_header("Content-Encoding", "gzip")
+			event.client.end_headers()
+			htmlPage = [
+$htmlArray
+			]
+			event.client.wfile.write(bytearray(htmlPage))
+			return
+<% 
+	for (function in rappStructureService.getFunctions(rappId)) {
+		if (!function.accessibleViaWeb) {
+			continue;
+		}
+		def functionName = function.name.substring(0, function.name.indexOf("("));
+%>		elif (event.url == "$functionName") :
+			urlFound = True
+<%		def functionCall = "self." + functionName + "(";
+		for (param in function.parameters) {
+			def paramName = param.name.substring(0, param.name.indexOf(":"));
+			functionCall += paramName + ", ";
+			if (param.type == "String") {
+%>			char $paramName[32];
+			event->server->getStringParameterValue(event->url, "$paramName", $paramName);
+<%			} else {
+%>			int $paramName = event->server->getIntParameterValue(event->url, "$paramName");
+<%			}
+		}
+		if(function.parameters.size() > 0) {
+			functionCall = functionCall[0..-3];
+		}
+		functionCall += ")"
+%>			$functionCall
+<%	}
+%>		elif (event.url == "getDescriptors") :
+			descriptors = self.getDescriptorsAsJson()
+			event.client.send_response(200)
+			event.client.send_header("Content-type", "application/json")
+			event.client.end_headers()
+			event.client.wfile.write(descriptors)
+			return
+		elif (event.url == "getState") :
+			urlFound = True;
+		
+        if not urlFound :
+			event.client.send_response(404)
+			return
 
+		event.client.send_response(200)
+		event.client.send_header("Content-type", "application/json")
+		event.client.end_headers()
+		event.client.wfile.write("{")
+<%	
+	first = true;
+	for (instance in rappStructureService.getInstances(rappId)) { 
+		if (instance.getPropertyValue("contributesToState")) {
+%>		event.client.wfile.write("<%= first ? "" : "," %>\"%s\":%s" % ("${instance.name}", self.${instance.name}.getStateAsJson()))
+<%			
+		first = false;
+		}
+	} 
+%>		event.client.wfile.write("}")
+	
+	def getDescriptorsAsJson(self) :
+		json = "{\"inputs\":["
+<%		
+	def first = true;
+	for (instance in rappStructureService.getInstances(rappId)) { 
+		if (instance.getPropertyValue("contributesToState")) {
+%>		json += "<%= first ? "" : "," %>{\"label\":\"${instance.name}\", \"property\":\"${instance.name}\"}"
+<% 			first = false;
 		}
 	}
+%>		json += "],\"commands\":["
+<%	
+	first = true;
+	for (function in rappStructureService.getFunctions(rappId)) {
+		if (function.accessibleViaWeb) {
+			def functionName = function.name.substring(0, function.name.indexOf("("));
+			def paramList = "";
+			def firstParam = true;
+			for (param in function.parameters) {
+				paramList += (firstParam ? "" : "; ") + param.name.substring(0, param.name.indexOf(":")) + ":" + param.type;
+				firstParam = false;
+			}
+%>		json += "<%= first ? "" : "," %>{\"label\":\"${functionName}\", \"command\":\"${functionName}\", \"parameters\":\"${paramList}\"}"
+<% 			first = false;
+		}
+	}
+%>		json += "]}"
+		return json
+
+<% 
+} // end if httpServer   	/*******************************************************************************************************/
+%>	def setup(self):
+		signal.signal(signal.SIGTERM, self.stop)
+		signal.signal(signal.SIGINT, self.stop)
+		
+<% 
+for (instance in rappStructureService.getInstances(rappId)) { 
+	def componentModel = componentService.getComponentByName(platformId, instance.type);
+%>		self.$instance.name = ${instance.type}()
+<% 
+	for (property in componentModel.getAllProperties()) {
+		def propertyValue = instance.getPropertyValue(property.name);
+		if (propertyValue == null) {
+			continue;
+		}
+		if (property.type == "char") {
+%>		self.${instance.name}.$property.name = "$propertyValue"
+<% 		} else {
+%>		self.${instance.name}.$property.name = $propertyValue
+<% 		}	
+	}
+	// set event handlers
+	for (eventHandler in instance.eventHandlers) {
+		def eventArgumentClass = componentModel.getEventByName(eventHandler.name).getType();
+%>		self.${instance.name}.${eventHandler.name} = self.${instance.name}_${eventHandler.name}
+<%	}
+	if (instance.name == httpServer.name) {
+%>		self.${instance.name}.onCommandReceived = self.${instance.name}_onCommandReceived
+<%	}
+%>
+<% 
 }
-%>
-def setup():<%
-    //Property initialisation section.
-    for (child in nodeService.getChildren(node.getNodeUri(), null)) {
-        def childName = child.getPropertyValue(PROPERTY_NAME);
-    
-        for (childPropertyName in behaviorRegistry.getAdditiveControllers(UtilConstants.FEATURE_PROPERTY_DESCRIPTORS, child)) {
-            def propertyName = childPropertyName.getName();
-            def propertyValue = child.getPropertyValue(propertyName);
+for (instance in rappStructureService.getInstances(rappId)) { 
+%>		self.${instance.name}.setup()
+<%}
+%>	
+	def start(self) :
+		self.running = True
+		while self.running :
+<% 
+for (instance in rappStructureService.getInstances(rappId)) { 
+%>			self.${instance.name}.loop()
+<%}
+%>			time.sleep(0.01)
+		GPIO.cleanup()
+		sys.exit(0)
 
-            //some property names, such as "name" should be excluded from initialisation.
-            if (utils.excludePropertyName(propertyName)) {
-                continue;
-            }
-            
-            if (!utils.isEmptyString(propertyValue)) {
-            
-%>
-    ${childName}.${propertyName} = ${propertyValue}<%
-            
-            }
-        }
-    
-    }
-    %>\r\n<%
-    //Add the corresponding event handler references.
-    for (child in nodeService.getChildren(node.getNodeUri(), null)) {
-        def childName = child.getPropertyValue(PROPERTY_NAME);
-    
-        for (eventNode in nodeService.getChildren(child.getNodeUri(), null)) {
-            if ( behaviorRegistry.belongsToCategory(ArduinoNodeConstants.TYPE_CATEGORY_EVENT, eventNode, null, true, null) ) {
-                def eventName = eventNode.getPropertyValue(PROPERTY_NAME);
-            
-%>  
-    ${childName}.${eventName} = ${utils.getEventHandlerFunctionName(childName, eventName)}<%
-
-            }
-        }
-    }
-
-    for (child in nodeService.getChildren(node.getNodeUri(), null)) {
-        def childName = child.getPropertyValue(PROPERTY_NAME);
-
-%>  
-    ${childName}.setup()<%
-        
-    }
-%>
-
-def start(): 
-    while True:<%
-    for (child in nodeService.getChildren(node.getNodeUri(), null)) {
-        def childName = child.getPropertyValue(PROPERTY_NAME);
-
-%>  
-        ${childName}.loop()<%
-        
-    }
-%>
+    def stop(self, signal, frame) :
+<% 
+for (instance in rappStructureService.getInstances(rappId)) { 
+%>		self.${instance.name}.stop()
+<%}
+%>		self.running = False
+		
 
 if __name__ == '__main__' :
-    setup()
-    start()
-
-import CustomCode
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    app = AppGen()
+    app.setup()
+    app.start()

@@ -61,26 +61,26 @@ for (instance in rappStructureService.getInstances(rappId)) {
 %>
 <%
 for (var in rappStructureService.getVariables(rappId)) {
-	def varName = var.name.substring(0, var.name.indexOf(":"));
 	def varType = convertDataType(var.type);
-%>	$varType $varName;
+%>	$varType $var.name;
 <% 
 }
 %>
 <% 
 // Functions
 for (function in rappStructureService.getFunctions(rappId)) {
-	def functionName = function.name.substring(0, function.name.indexOf("("));
-	def functionDeclaration = convertDataType(function.type) + " " + functionName + "(";
+	def functionDeclaration = convertDataType(function.type) + " " + function.name + "(";
 	for (param in function.parameters) {
-		def paramName = param.name.substring(0, param.name.indexOf(":"));
-		functionDeclaration += convertDataType(param.type) + " " + paramName + ", ";
+		functionDeclaration += convertDataType(param.type) + " " + param.name + ", ";
 	}
 	if(function.parameters.size() > 0) {
 		functionDeclaration = functionDeclaration[0..-3];
 	}
 	functionDeclaration += ")";
-	def code = blocklyToCppConverter.convert(function.blocklyContent);
+	def code = null;
+	if (function.blocklyContent != null) {
+		code = blocklyToCppConverter.convert(function.blocklyContent);
+	}
 	code = (code == null ? "" : code.toString(2));
 %>	$functionDeclaration {
 $code
@@ -93,8 +93,11 @@ $code
 for (instance in rappStructureService.getInstances(rappId)) { 
 	def componentModel = componentService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
-		def code = blocklyToCppConverter.convert(eventHandler.blocklyContent);
-		code = (code == null ? "" : code.toString(2));
+	def code = null;
+	if (eventHandler.blocklyContent != null) {
+		code = blocklyToCppConverter.convert(eventHandler.blocklyContent);
+	}
+	code = (code == null ? "" : code.toString(2));
 %>	void ${instance.name}_${eventHandler.name}(${componentModel.getEventByName(eventHandler.name).getType()}* event) {
 $code
 	}
@@ -122,21 +125,19 @@ $htmlArray
 		if (!function.accessibleViaWeb) {
 			continue;
 		}
-		def functionName = function.name.substring(0, function.name.indexOf("("));
-%>		} else if (strcmp_P(command, PSTR("$functionName")) == 0) {
+%>		} else if (strcmp_P(command, PSTR("$function.name")) == 0) {
 			urlFound = true;
-<%		def functionCall = functionName + "(";
+<%		def functionCall = function.name + "(";
 		for (param in function.parameters) {
-			def paramName = param.name.substring(0, param.name.indexOf(":"));
-			functionCall += paramName + ", ";
-			if (param.type == "String") {
-%>			char $paramName[32];
-			event->server->getStringParameterValue(event->url, "$paramName", $paramName);
+			functionCall += param.name + ", ";
+			if (param.type == "string") {
+%>			char ${param.name}[32];
+			event->server->getStringParameterValue(event->url, "$param.name", $param.name);
 <%			} else {
-%>			int $paramName = event->server->getIntParameterValue(event->url, "$paramName");
+%>			int $param.name = event->server->getIntParameterValue(event->url, "$param.name");
 <%			}
 		}
-		if(function.parameters.size() > 0) {
+		if (function.parameters.size() > 0) {
 			functionCall = functionCall[0..-3];
 		}
 		functionCall += ");"
@@ -175,14 +176,13 @@ $htmlArray
 	first = true;
 	for (function in rappStructureService.getFunctions(rappId)) {
 		if (function.accessibleViaWeb) {
-			def functionName = function.name.substring(0, function.name.indexOf("("));
 			def paramList = "";
 			def firstParam = true;
 			for (param in function.parameters) {
-				paramList += (firstParam ? "" : "; ") + param.name.substring(0, param.name.indexOf(":")) + ":" + param.type;
+				paramList += (firstParam ? "" : "; ") + param.name + ":" + param.type;
 				firstParam = false;
 			}
-%>		print->print(F("<%= first ? "" : "," %>{\"label\":\"${functionName}\", \"command\":\"${functionName}\", \"parameters\":\"${paramList}\"}"));
+%>		print->print(F("<%= first ? "" : "," %>{\"label\":\"${function.name}\", \"command\":\"${function.name}\", \"parameters\":\"${paramList}\"}"));
 <% 			first = false;
 		}
 	}
@@ -230,12 +230,13 @@ for (instance in rappStructureService.getInstances(rappId)) {
 		def eventArgumentClass = componentModel.getEventByName(eventHandler.name).getType();
 %>		${instance.name}.${eventHandler.name} = new DelegatingCallback<AppGen, ${eventArgumentClass}>(this, &AppGen::${instance.name}_${eventHandler.name}); 
 <%	}
-	if (instance.name == httpServer.name) {
+	if (httpServer != null && instance.name == httpServer.name) {
 %>		${instance.name}.onCommandReceived = new DelegatingCallback<AppGen, HttpCommandEvent>(this, &AppGen::${instance.name}_onCommandReceived); 
 <%	}
 %>
 <% 
 }
+
 for (instance in rappStructureService.getInstances(rappId)) { 
 %>		${instance.name}.setup();
 <%}
@@ -251,7 +252,9 @@ for (instance in rappStructureService.getInstances(rappId)) {
 	
 };
 
-AppGen app;
+#include "CustomCode.h"
+
+App app;
 
 void setup() {
 	Serial.begin(115200);
