@@ -51,16 +51,41 @@
 		
 		\$scope.getBoardUrl = function(appendableQueryString){
 			return baseUrl + appendableQueryString;
+		}		
+		\$scope.camelCaseToTextWithSpaces = function(str) {
+			var result = str.replace( /([A-Z])/g, " \$1" );
+			var finalResult = result.charAt(0).toUpperCase() + result.slice(1).toLowerCase(); // capitalize the first letter - as an example.
+			return finalResult;
 		}
 		
+		function buildStatusLabel(key){
+			var index = key.indexOf("__");
+			var label = "";
+			if (index == -1) {
+				label = key;
+			} else {
+				label = key.substring(index + 2, key.length);
+			}
+
+			return \$scope.camelCaseToTextWithSpaces(label);
+		}
 		var checkStatus = function() {
 			\$http.get(\$scope.getBoardUrl("getState")).success(function(status) {
 				\$scope.status = status;
+				\$scope.statusAsArray = []; 
+				  for (var key in status) {
+					if ( status.hasOwnProperty(key) ) {
+					  if (key != "freeMem") {
+						 var statusObj = {};
+						 statusObj.label = buildStatusLabel(key);
+						 statusObj.value = status[key];
+						 \$scope.statusAsArray.push(statusObj);
+					  }
+					} 
+				  } 
 			})
-		};
-
-		//\$interval(checkStatus, 1000);			
-		checkStatus();
+		}
+		\$interval(checkStatus, 1000);
 
 		\$scope.invoke = function(commandPath, successHandler, errorHandler) {
 			\$http.get(commandPath).success(function(response) {
