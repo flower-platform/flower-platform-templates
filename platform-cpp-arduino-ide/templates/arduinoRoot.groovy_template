@@ -91,7 +91,7 @@ $code
 
 // Event handlers
 for (instance in rappStructureService.getInstances(rappId)) { 
-	def componentModel = componentService.getComponentByName(platformId, instance.type);
+	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
 	def code = null;
 	if (eventHandler.blocklyContent != null) {
@@ -211,7 +211,7 @@ $htmlArray
 	void setup() {
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
-	def componentModel = componentService.getComponentByName(platformId, instance.type);
+	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 	for (property in componentModel.getAllProperties()) {
 		def propertyValue = instance.getPropertyValue(property.name);
 		if (propertyValue == null) {
