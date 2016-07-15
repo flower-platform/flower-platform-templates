@@ -239,13 +239,13 @@ for (instance in rappStructureService.getInstances(rappId)) {
 		GPIO.cleanup()
 		sys.exit(0)
 
-    def stop(self, signal, frame) :
+	def stop(self, signal, frame) :
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
 %>		self.${instance.name}.stop()
 <%}
 %>		self.running = False
-		
+
 
 if __name__ == '__main__' :
     app = AppGen()
