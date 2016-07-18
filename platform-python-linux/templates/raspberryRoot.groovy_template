@@ -76,7 +76,7 @@ for (function in rappStructureService.getFunctions(rappId)) {
 		functionDeclaration += ", " + param.name;
 	}
 	functionDeclaration += ")";
-	def code;// = blocklyToCppConverter.convert(function.blocklyContent);
+	def code = blocklyToPythonConverter.convert(function.blocklyContent);
 	code = (code == null ? "" : code.toString(2));
 %>	$functionDeclaration :
 <%= code ? code : "\t\treturn" %>
@@ -88,7 +88,7 @@ for (function in rappStructureService.getFunctions(rappId)) {
 for (instance in rappStructureService.getInstances(rappId)) { 
 	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
-		def code;// = blocklyToCppConverter.convert(eventHandler.blocklyContent);
+		def code = blocklyToPythonConverter.convert(eventHandler.blocklyContent);
 		code = (code == null ? "" : code.toString(2));
 %>	def ${instance.name}_${eventHandler.name}(self, event) :
 <%= code ? code : "\t\treturn" %>
@@ -122,10 +122,10 @@ $htmlArray
 		for (param in function.parameters) {
 			functionCall += param.name + ", ";
 			if (param.type == "String") {
-%>			char $paramName[32];
-			event->server->getStringParameterValue(event->url, "$param.name", $param.name);
+%>				char ${param.name}[32];
+				event->server->getStringParameterValue(event->url, "$param.name", $param.name);
 <%			} else {
-%>			int $paramName = event->server->getIntParameterValue(event->url, "$param.name");
+%>				int ${param.name} = event->server->getIntParameterValue(event->url, "$param.name");
 <%			}
 		}
 		if(function.parameters.size() > 0) {
