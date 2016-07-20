@@ -63,6 +63,7 @@ from FlowerPlatformRuntime import ValueChangedEvent
 			%>import ${fileName}\r\n<%
 		}
 	}
+	
 %>
 
 class AppGen :
@@ -70,14 +71,12 @@ class AppGen :
 <% 
 // Functions
 for (function in rappStructureService.getFunctions(rappId)) {
-	def functionName = function.name.substring(0, function.name.indexOf("("));
-	def functionDeclaration = "def " + functionName + "(self";
+	def functionDeclaration = "def " + function.name + "(self";
 	for (param in function.parameters) {
-		def paramName = param.name.substring(0, param.name.indexOf(":"));
-		functionDeclaration += ", " + paramName;
+		functionDeclaration += ", " + param.name;
 	}
 	functionDeclaration += ")";
-	def code;// = blocklyToCppConverter.convert(function.blocklyContent);
+	def code = blocklyToPythonConverter.convert(function.blocklyContent);
 	code = (code == null ? "" : code.toString(2));
 %>	$functionDeclaration :
 <%= code ? code : "\t\treturn" %>
@@ -87,9 +86,9 @@ for (function in rappStructureService.getFunctions(rappId)) {
 
 // Event handlers
 for (instance in rappStructureService.getInstances(rappId)) { 
-	def componentModel = componentService.getComponentByName(platformId, instance.type);
+	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
-		def code;// = blocklyToCppConverter.convert(eventHandler.blocklyContent);
+		def code = blocklyToPythonConverter.convert(eventHandler.blocklyContent);
 		code = (code == null ? "" : code.toString(2));
 %>	def ${instance.name}_${eventHandler.name}(self, event) :
 <%= code ? code : "\t\treturn" %>
@@ -112,22 +111,21 @@ $htmlArray
 			event.client.wfile.write(bytearray(htmlPage))
 			return
 <% 
+	
 	for (function in rappStructureService.getFunctions(rappId)) {
 		if (!function.accessibleViaWeb) {
 			continue;
 		}
-		def functionName = function.name.substring(0, function.name.indexOf("("));
-%>		elif (event.url == "$functionName") :
+%>		elif (event.url == "$function.name") :
 			urlFound = True
-<%		def functionCall = "self." + functionName + "(";
+<%		def functionCall = "self." + function.name + "(";
 		for (param in function.parameters) {
-			def paramName = param.name.substring(0, param.name.indexOf(":"));
-			functionCall += paramName + ", ";
+			functionCall += param.name + ", ";
 			if (param.type == "String") {
-%>			char $paramName[32];
-			event->server->getStringParameterValue(event->url, "$paramName", $paramName);
+%>				char ${param.name}[32];
+				event->server->getStringParameterValue(event->url, "$param.name", $param.name);
 <%			} else {
-%>			int $paramName = event->server->getIntParameterValue(event->url, "$paramName");
+%>				int ${param.name} = event->server->getIntParameterValue(event->url, "$param.name");
 <%			}
 		}
 		if(function.parameters.size() > 0) {
@@ -180,14 +178,13 @@ $htmlArray
 	first = true;
 	for (function in rappStructureService.getFunctions(rappId)) {
 		if (function.accessibleViaWeb) {
-			def functionName = function.name.substring(0, function.name.indexOf("("));
 			def paramList = "";
 			def firstParam = true;
 			for (param in function.parameters) {
-				paramList += (firstParam ? "" : "; ") + param.name.substring(0, param.name.indexOf(":")) + ":" + param.type;
+				paramList += (firstParam ? "" : "; ") + param.name + ":" + param.type;
 				firstParam = false;
 			}
-%>		json += "<%= first ? "" : "," %>{\"label\":\"${functionName}\", \"command\":\"${functionName}\", \"parameters\":\"${paramList}\"}"
+%>		json += "<%= first ? "" : "," %>{\"label\":\"${function.name}\", \"command\":\"${function.name}\", \"parameters\":\"${paramList}\"}"
 <% 			first = false;
 		}
 	}
@@ -202,7 +199,7 @@ $htmlArray
 		
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
-	def componentModel = componentService.getComponentByName(platformId, instance.type);
+	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 %>		self.$instance.name = ${instance.type}()
 <% 
 	for (property in componentModel.getAllProperties()) {
@@ -242,13 +239,13 @@ for (instance in rappStructureService.getInstances(rappId)) {
 		GPIO.cleanup()
 		sys.exit(0)
 
-    def stop(self, signal, frame) :
+	def stop(self, signal, frame) :
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
 %>		self.${instance.name}.stop()
 <%}
 %>		self.running = False
-		
+
 
 if __name__ == '__main__' :
     app = AppGen()
