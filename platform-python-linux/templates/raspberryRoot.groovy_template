@@ -48,17 +48,15 @@ import sys
 import time
 import RPi.GPIO as GPIO
 
-from FlowerPlatformRuntime import ValueChangedEvent
-
 <%	
 	import org.flowerplatform.util.Pair; 
 	Pair<String, String>[] imports = templateUtils.getImports(componentsNode.getNodeUri());
 	for (Pair<String, String> importPair : imports) {
 		// in python when import files we must not include .py extension like cpp (.h, .c, .cpp)
-		def fileName = importPair.a.replace(".py", "");
+		def fileName = importPair.a.replace(".py", "").replace("/", ".");
 		def componentName = importPair.b;
 		if (componentName != templateUtils.INITIAL_IMPORT) {
-			%>from FlowerPlatformRuntime.${componentName} import ${componentName}\r\n<%
+			%>from $fileName import ${componentName}\r\n<%
 		} else {
 			%>import ${fileName}\r\n<%
 		}
