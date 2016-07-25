@@ -51,8 +51,8 @@ import RPi.GPIO as GPIO
 from FlowerPlatformRuntime import ValueChangedEvent
 
 <%	
-	import org.flowerplatform.util.Pair; 
-	Pair<String, String>[] imports = templateUtils.getImports(componentsNode.getNodeUri());
+	import org.flowerplatform.gwt.shared.util.Pair;
+	Pair<String, String>[] imports = rappStructureService.getImports(rappId);
 	for (Pair<String, String> importPair : imports) {
 		// in python when import files we must not include .py extension like cpp (.h, .c, .cpp)
 		def fileName = importPair.a.replace(".py", "");

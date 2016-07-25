@@ -37,8 +37,8 @@ def convertDataType(type) {
 #include <HardwareSerial.h>
 #include <stdbool.h>
 
-<%	import org.flowerplatform.util.Pair;
-	Pair<String, String>[] imports = templateUtils.getImports(componentsNode.getNodeUri());
+<%	import org.flowerplatform.gwt.shared.util.Pair;
+	Pair<String, String>[] imports = rappStructureService.getImports(rappId);
 	for (Pair<String, String> importPair : imports) {
 		def fileName = importPair.a;
 %>#include <${fileName}>
