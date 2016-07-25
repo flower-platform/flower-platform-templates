@@ -64,7 +64,7 @@
 			if (index == -1) {
 				label = key;
 			} else {
-				label = key.substring(index + 2, key.length);
+				label = key.substring(0, index) + " " + key.substring(index + 2, key.length);
 			}
 
 			return \$scope.camelCaseToTextWithSpaces(label);

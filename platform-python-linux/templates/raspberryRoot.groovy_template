@@ -25,7 +25,7 @@ def uiRepoName = node.getPropertyValue("uiRepository");
 def uiRepoRootNode = MainModelNature.getMainModel(uiRepoName);
 def componentsRootNodeOfUiRepo = nodeService.navigateByType(uiRepoRootNode.nodeUri, [CoreNodeConstants.TYPE_COMPONENTS_ROOT]);
 def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, CoreConstants.DEFAULT, false, null)[0].content;
-htmlCompressor.setCompressCss(true);               
+htmlCompressor.setCompressCss(true);
 htmlCompressor.setCompressJavaScript(true);
 def minifiedcode = htmlCompressor.compress(generatedUiCode);
 def htmlArray = templateUtils.bytesToHexArray(templateUtils.gzip(minifiedcode), 512, 4);
@@ -48,27 +48,33 @@ import sys
 import time
 import RPi.GPIO as GPIO
 
-from FlowerPlatformRuntime import ValueChangedEvent
-
 <%	
 	import org.flowerplatform.gwt.shared.util.Pair;
 	Pair<String, String>[] imports = rappStructureService.getImports(rappId);
 	for (Pair<String, String> importPair : imports) {
 		// in python when import files we must not include .py extension like cpp (.h, .c, .cpp)
-		def fileName = importPair.a.replace(".py", "");
+		def fileName = importPair.a.replace(".py", "").replace("/", ".");
 		def componentName = importPair.b;
 		if (componentName != templateUtils.INITIAL_IMPORT) {
-			%>from FlowerPlatformRuntime import ${componentName}\r\n<%
+			%>from $fileName import ${componentName}\r\n<%
 		} else {
 			%>import ${fileName}\r\n<%
 		}
 	}
-	
+
 %>
 
 class AppGen :
-	
+
+<%
+//Variables
+for (var in rappStructureService.getVariables(rappId)) {
+	def varType = convertDataType(var.type);
+%>	$var.name = None
+
 <% 
+}
+
 // Functions
 for (function in rappStructureService.getFunctions(rappId)) {
 	def functionDeclaration = "def " + function.name + "(self";
@@ -77,7 +83,7 @@ for (function in rappStructureService.getFunctions(rappId)) {
 	}
 	functionDeclaration += ")";
 	def code = blocklyToPythonConverter.convert(function.blocklyContent);
-	code = (code == null ? "" : code.toString(2));
+	code = (code == null ? "" : code.toString(2, "\t"));
 %>	$functionDeclaration :
 <%= code ? code : "\t\treturn" %>
 
@@ -89,7 +95,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
 		def code = blocklyToPythonConverter.convert(eventHandler.blocklyContent);
-		code = (code == null ? "" : code.toString(2));
+		code = (code == null ? "" : code.toString(2, "\t"));
 %>	def ${instance.name}_${eventHandler.name}(self, event) :
 <%= code ? code : "\t\treturn" %>
 	
@@ -122,10 +128,9 @@ $htmlArray
 		for (param in function.parameters) {
 			functionCall += param.name + ", ";
 			if (param.type == "String") {
-%>				char ${param.name}[32];
-				event->server->getStringParameterValue(event->url, "$param.name", $param.name);
+%>			${param.name} = event.parameters.get("$param.name")[0]
 <%			} else {
-%>				int ${param.name} = event->server->getIntParameterValue(event->url, "$param.name");
+%>			${param.name} = int(event.parameters.get("$param.name")[0])
 <%			}
 		}
 		if(function.parameters.size() > 0) {
@@ -144,7 +149,7 @@ $htmlArray
 		elif (event.url == "getState") :
 			urlFound = True;
 		
-        if not urlFound :
+		if not urlFound :
 			event.client.send_response(404)
 			return
 
@@ -156,7 +161,7 @@ $htmlArray
 	first = true;
 	for (instance in rappStructureService.getInstances(rappId)) { 
 		if (instance.getPropertyValue("contributesToState")) {
-%>		event.client.wfile.write("<%= first ? "" : "," %>\"%s\":%s" % ("${instance.name}", self.${instance.name}.getStateAsJson()))
+%>		event.client.wfile.write("<%= first ? "" : "," %>%s" % (self.${instance.name}.getStateAsJson("${instance.name}")))
 <%			
 		first = false;
 		}
@@ -164,16 +169,7 @@ $htmlArray
 %>		event.client.wfile.write("}")
 	
 	def getDescriptorsAsJson(self) :
-		json = "{\"inputs\":["
-<%		
-	def first = true;
-	for (instance in rappStructureService.getInstances(rappId)) { 
-		if (instance.getPropertyValue("contributesToState")) {
-%>		json += "<%= first ? "" : "," %>{\"label\":\"${instance.name}\", \"property\":\"${instance.name}\"}"
-<% 			first = false;
-		}
-	}
-%>		json += "],\"commands\":["
+		json = '{"commands":['
 <%	
 	first = true;
 	for (function in rappStructureService.getFunctions(rappId)) {
@@ -218,7 +214,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 		def eventArgumentClass = componentModel.getEventByName(eventHandler.name).getType();
 %>		self.${instance.name}.${eventHandler.name} = self.${instance.name}_${eventHandler.name}
 <%	}
-	if (instance.name == httpServer.name) {
+	if (httpServer != null && instance.name == httpServer.name) {
 %>		self.${instance.name}.onCommandReceived = self.${instance.name}_onCommandReceived
 <%	}
 %>
@@ -227,7 +223,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 for (instance in rappStructureService.getInstances(rappId)) { 
 %>		self.${instance.name}.setup()
 <%}
-%>	
+%>
 	def start(self) :
 		self.running = True
 		while self.running :
@@ -248,6 +244,6 @@ for (instance in rappStructureService.getInstances(rappId)) {
 
 
 if __name__ == '__main__' :
-    app = AppGen()
-    app.setup()
-    app.start()
+	app = AppGen()
+	app.setup()
+	app.start()
