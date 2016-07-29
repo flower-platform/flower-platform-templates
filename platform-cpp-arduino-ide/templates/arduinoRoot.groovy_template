@@ -6,6 +6,8 @@ import org.flowerplatform.core.nature.MainModelNature;
 import org.flowerplatform.core.CoreNodeConstants;
 import org.flowerplatform.core.CoreConstants;
 
+// The name we use for the class we generate to store code in
+final MAIN_CLASS_NAME = "AppGen";
 final PROPERTY_NAME = "name";
 
 def rappId = Utils.getRepo(node.nodeUri);
@@ -33,6 +35,17 @@ def convertDataType(type) {
 	}
 }
 
+// Returns true if any of the given instances have a non-null constructorVariant (i.e.
+// they choose to use a custom constructor as opposed to the default one.
+def anyInstanceHasConstructorVariant(instances) {
+	for (instance in instances) {
+		if (instance.hasConstructorVariant()) {
+			return true;
+		}
+	}
+	return false;
+}
+
 %>#include <Arduino.h>
 #include <HardwareSerial.h>
 #include <stdbool.h>
@@ -45,15 +58,16 @@ def convertDataType(type) {
 <%	}
 %>
 
-class AppGen {
+class ${MAIN_CLASS_NAME} {
 public: 
 	
 <%
 def httpServer = null;
+def instances = rappStructureService.getInstances(rappId);
 
 // Components declaration
-for (instance in rappStructureService.getInstances(rappId)) { 
-%>	$instance.type $instance.name;
+for (instance in instances) { 
+%>	${instance.type} ${instance.name};
 <%	if (instance.type == "HttpServer") {
 		httpServer = instance;
 	}
@@ -64,6 +78,41 @@ for (var in rappStructureService.getVariables(rappId)) {
 	def varType = convertDataType(var.type);
 %>	$varType $var.name;
 <% 
+}
+
+if (anyInstanceHasConstructorVariant(instances)) {
+%>	${MAIN_CLASS_NAME}() : <%
+	boolean firstWithConstructorVariant = true; // need to know when to print separator
+	for (instance in instances) {
+		if (!instance.hasConstructorVariant()) {
+			continue;
+		}
+
+		if (firstWithConstructorVariant) {
+			firstWithConstructorVariant = false;
+		} else {
+			%>,<%
+		}
+		
+		def componentModel = libraryService.getComponentByName(platformId, instance.type);
+		def constructor = componentModel.getConstructorByConstructorVariant(instance.getConstructorVariant());
+		if (constructor != null) {
+			%>${instance.name}(<%
+			def parameters = constructor.getParameters();
+			if (parameters != null) {
+				for (int i=0; i<parameters.size(); i++) {
+					if (i>0) {
+						%>,<%
+					}
+					%>${instance.getConstructorParameterValue(parameters.get(i).getName())}<%
+				}
+			}
+			%>) {}
+			<%
+		} else {
+			throw new NullPointerException("Specified constructor was not found on the component " + instance.getName() + " of type " + instance.getType());
+		}
+	}
 }
 %>
 <% 
