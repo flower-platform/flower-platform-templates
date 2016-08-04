@@ -226,6 +226,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 %>
 	def start(self) :
 		self.running = True
+		print 'Rapp started !'
 		while self.running :
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
