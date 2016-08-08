@@ -181,8 +181,9 @@ $htmlArray
 		for (param in function.parameters) {
 			functionCall += param.name + ", ";
 			if (param.type == "String") {
-%>			char ${param.name}[32];
-			event->server->getStringParameterValue(event->url, "$param.name", $param.name);
+%>			char ${param.name}Buf[32];
+			event->server->getStringParameterValue(event->url, "$param.name", ${param.name}Buf);
+			String ${param.name} = ${param.name}Buf;
 <%			} else {
 %>			int $param.name = event->server->getIntParameterValue(event->url, "$param.name");
 <%			}
@@ -288,19 +289,21 @@ for (instance in rappStructureService.getInstances(rappId)) {
 }
 
 for (instance in rappStructureService.getInstances(rappId)) { 
-		if(templateUtils.checkIfMethodExists(instance, platformId, "setup")) {	
+	if(templateUtils.checkIfMethodExists(instance, platformId, "setup")) {
 %>		${instance.name}.setup();
-<%}}
+<%	}
+}
 %>	}
 
 	void loop() {
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
-		if(templateUtils.checkIfMethodExists(instance, platformId, "loop")) {	
+	if(templateUtils.checkIfMethodExists(instance, platformId, "loop")) {	
 %>		${instance.name}.loop();
-<%}}
+<%	}
+}
 %>	}
-	
+
 };
 
 #include "CustomCode.h"
