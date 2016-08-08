@@ -25,16 +25,6 @@ htmlCompressor.setCompressJavaScript(true);
 def minifiedcode = htmlCompressor.compress(generatedUiCode);
 def htmlArray = templateUtils.bytesToHexArray(templateUtils.gzip(minifiedcode), 512, 4);
 
-def convertDataType(type) {
-	if (type == null) {
-		return "void";
-	}
-	switch(type) {
-		case "string": return "const char*";
-		default: return type;
-	}
-}
-
 // Returns true if any of the given instances have a non-null constructorVariant (i.e.
 // they choose to use a custom constructor as opposed to the default one.
 def anyInstanceHasConstructorVariant(instances) {
@@ -75,13 +65,14 @@ for (instance in instances) {
 %>
 <%
 for (var in rappStructureService.getVariables(rappId)) {
-	def varType = convertDataType(var.type);
-%>	$varType $var.name;
+%>	$var.type $var.name;
 <% 
 }
 
 if (anyInstanceHasConstructorVariant(instances)) {
-%>	${MAIN_CLASS_NAME}() : <%
+%>
+	${MAIN_CLASS_NAME}()
+<%
 	boolean firstWithConstructorVariant = true; // need to know when to print separator
 	for (instance in instances) {
 		if (!instance.hasConstructorVariant()) {
@@ -90,8 +81,9 @@ if (anyInstanceHasConstructorVariant(instances)) {
 
 		if (firstWithConstructorVariant) {
 			firstWithConstructorVariant = false;
+%>		: <%
 		} else {
-			%>,<%
+%>		, <%
 		}
 		
 		def componentModel = libraryService.getComponentByName(platformId, instance.type);
@@ -104,23 +96,32 @@ if (anyInstanceHasConstructorVariant(instances)) {
 					if (i>0) {
 						%>,<%
 					}
-					%>${instance.getConstructorParameterValue(parameters.get(i).getName())}<%
+					def param = parameters.get(i);
+					if (param.type == "String") {
+						%>"${instance.getConstructorParameterValue(param.getName())}"<%
+					} else if (param.pointer) {
+						%>&${instance.getConstructorParameterValue(param.getName())}<%
+					} else {
+						%>${instance.getConstructorParameterValue(param.getName())}<%
+					}
 				}
 			}
-			%>) {}
-			<%
+			%>)
+<%
 		} else {
 			throw new NullPointerException("Specified constructor was not found on the component " + instance.getName() + " of type " + instance.getType());
 		}
 	}
+%>	{};
+<%
 }
 %>
 <% 
 // Functions
 for (function in rappStructureService.getFunctions(rappId)) {
-	def functionDeclaration = convertDataType(function.type) + " " + function.name + "(";
+	def functionDeclaration = (function.type == null ? "void" : function.type) + " " + function.name + "(";
 	for (param in function.parameters) {
-		functionDeclaration += convertDataType(param.type) + " " + param.name + ", ";
+		functionDeclaration += param.type + " " + param.name + ", ";
 	}
 	if(function.parameters.size() > 0) {
 		functionDeclaration = functionDeclaration[0..-3];
@@ -179,7 +180,7 @@ $htmlArray
 <%		def functionCall = function.name + "(";
 		for (param in function.parameters) {
 			functionCall += param.name + ", ";
-			if (param.type == "string") {
+			if (param.type == "String") {
 %>			char ${param.name}[32];
 			event->server->getStringParameterValue(event->url, "$param.name", $param.name);
 <%			} else {
@@ -266,7 +267,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 		if (propertyValue == null) {
 			continue;
 		}
-		if (property.type == "char") {
+		if (property.type == "String") {
 %>		${instance.name}.$property.name = "$propertyValue";
 <% 		} else if (property.pointer) {
 %>		${instance.name}.$property.name = &$propertyValue;
