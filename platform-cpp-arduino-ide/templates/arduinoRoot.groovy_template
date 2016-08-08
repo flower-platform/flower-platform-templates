@@ -288,16 +288,17 @@ for (instance in rappStructureService.getInstances(rappId)) {
 }
 
 for (instance in rappStructureService.getInstances(rappId)) { 
+		if(templateUtils.checkIfMethodExists(instance, platformId, "setup")) {	
 %>		${instance.name}.setup();
-<%}
+<%}}
 %>	}
 
 	void loop() {
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
+		if(templateUtils.checkIfMethodExists(instance, platformId, "loop")) {	
 %>		${instance.name}.loop();
-<% 
-}
+<%}}
 %>	}
 	
 };
