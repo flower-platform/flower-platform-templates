@@ -95,7 +95,7 @@ if (anyInstanceHasConstructorVariant(instances)) {
 			if (parameters != null) {
 				for (int i=0; i<parameters.size(); i++) {
 					if (i>0) {
-						%>,<%
+						%>, <%
 					}
 					def param = parameters.get(i);
 					if (param.type == "String") {
@@ -159,6 +159,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 %>	void ${instance.name}_${eventHandler.name}(${componentModel.getEventByName(eventHandler.name).getType()}* event) {
 $code
 	}
+	
 <%	} // end for loop events
 } // end for loop instances
 
@@ -168,6 +169,9 @@ if (httpServer != null) {   /****************************************** HttpServ
 		char command[32];
 		event->server->getCommandFromUrl(event->url, command);
 		bool urlFound = false;
+		
+		char returnValueBuf[64];
+		char *returnValueJson = NULL;
 		
 		BufferedPrint out(event->client);
 		if (strcmp_P(command, PSTR("")) == 0) {
@@ -192,6 +196,8 @@ $htmlArray
 %>			char ${param.name}Buf[32];
 			event->server->getStringParameterValue(event->url, "$param.name", ${param.name}Buf);
 			String ${param.name} = ${param.name}Buf;
+<%			} else if (param.type == "bool") {
+%>			bool $param.name = event->server->getBoolParameterValue(event->url, "$param.name");
 <%			} else {
 %>			int $param.name = event->server->getIntParameterValue(event->url, "$param.name");
 <%			}
@@ -199,11 +205,24 @@ $htmlArray
 		if (function.parameters.size() > 0) {
 			functionCall = functionCall[0..-3];
 		}
-		functionCall += ");"
-%>			$functionCall
-<%	}
-%>		} else if (strcmp_P(command, PSTR("getDescriptors")) == 0) {
-			printDescriptorsAsJson(&out);
+		functionCall += ")";
+		if (function.type == "String") {
+%>			returnValueJson = returnValueBuf;
+			strcat(returnValueJson, "\"");
+			strcat(returnValueJson, ${functionCall}.c_str());
+			strcat(returnValueJson, "\"");
+<%		} else if (function.type == "int") {
+%>			returnValueJson = returnValueBuf;
+			itoa(${functionCall}, returnValueJson, 10);
+<%		} else if (function.type == "bool") {
+%>			returnValueJson = returnValueBuf;
+			strcat_P(returnValueJson, ${functionCall} ? PSTR("true") : PSTR("false"));
+<%		} else {
+%>			${functionCall};
+<%		}
+	}	
+%>		} else if (strcmp_P(command, PSTR("getCommands")) == 0) {
+			printCommandDescriptorsAsJson(&out);
 			out.flush();
 			return;
 		} else if (strcmp_P(command, PSTR("getState")) == 0) {
@@ -212,25 +231,15 @@ $htmlArray
 		
 		if (urlFound) {
 			event->server->httpSuccess(&out);
-			printStateAsJson(&out);
+			printStateAsJson(&out, returnValueJson);
 		} else {
 			event->server->httpError404(&out);
 		}
 		out.flush();
 	}
 	
-	void printDescriptorsAsJson(Print* print) {
-		print->print(F("{\"inputs\":["));
-<%		
-	def first = true;
-	for (instance in rappStructureService.getInstances(rappId)) { 
-		if (instance.getPropertyValue("contributesToState")) {
-%>		print->print(F("<%= first ? "" : "," %>{\"label\":\"${instance.name}\", \"property\":\"${instance.name}\"}"));
-<% 			first = false;
-		}
-	}
-%>
-		print->print(F("],\"commands\":["));
+	void printCommandDescriptorsAsJson(Print* print) {
+		print->print(F("["));
 <%	
 	first = true;
 	for (function in rappStructureService.getFunctions(rappId)) {
@@ -238,19 +247,17 @@ $htmlArray
 			def paramList = "";
 			def firstParam = true;
 			for (param in function.parameters) {
-				paramList += (firstParam ? "" : "; ") + param.name + ":" + param.type;
+				paramList += (firstParam ? "" : ";") + param.name + ":" + param.type;
 				firstParam = false;
 			}
-%>		print->print(F("<%= first ? "" : "," %>{\"label\":\"${function.name}\", \"command\":\"${function.name}\", \"parameters\":\"${paramList}\"}"));
+%>		print->print(F("<%= first ? "" : "," %>{\"command\":\"${function.name}\", \"parameters\":\"${paramList}\"}"));
 <% 			first = false;
 		}
 	}
-	%>		
-		print->print(F("]}"));
-
+%>		print->print(F("]"));
 	}
 	
-	void printStateAsJson(Print* print) {
+	void printStateAsJson(Print* print, const char* returnValueJson) {
 		print->print(F("{"));
 <%		
 	for (instance in rappStructureService.getInstances(rappId)) { 
@@ -260,6 +267,11 @@ $htmlArray
 <%		}
 	} 
 %>	
+		if (returnValueJson) {
+			print->print(F(",\"__RESULT\":"));
+			print->print(returnValueJson);
+		}
+		
 		write_P(print, PSTR("\"freeMem\": "));
 		print->print(freeRam());
 		print->print("}");
@@ -339,13 +351,14 @@ for (instance in rappStructureService.getInstances(rappId)) {
 
 #include "CustomCode.h"
 
-App app;
+App* app;
 
 void setup() {
 	Serial.begin(115200);
-	app.setup();
+	app = new App();
+	app->setup();
 }
 
 void loop() {
-	app.loop();
+	app->loop();
 }
