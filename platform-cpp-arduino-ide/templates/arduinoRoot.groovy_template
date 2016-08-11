@@ -6,8 +6,9 @@ import org.flowerplatform.core.nature.MainModelNature;
 import org.flowerplatform.core.CoreNodeConstants;
 import org.flowerplatform.core.CoreConstants;
 
-// The name we use for the class we generate to store code in
+// The name we use for the class we generate to store code in.
 final MAIN_CLASS_NAME = "AppGen";
+// The name of the node property that gives us the name (of the component, etc)
 final PROPERTY_NAME = "name";
 
 def rappId = Utils.getRepo(node.nodeUri);
@@ -119,7 +120,14 @@ if (anyInstanceHasConstructorVariant(instances)) {
 <% 
 // Functions
 for (function in rappStructureService.getFunctions(rappId)) {
-	def functionDeclaration = (function.type == null ? "void" : function.type) + " " + function.name + "(";
+	def name = function.name;
+	
+	// Check if the name of the user-defined function is one of the "reserved" ones.
+	if (rappStructureService.isSpecialFunction(name)) {
+		name = rappStructureService.getNewSpecialFunctionName(name);
+	}
+
+	def functionDeclaration = (function.type == null ? "void" : function.type) + " " + name + "(";
 	for (param in function.parameters) {
 		functionDeclaration += param.type + " " + param.name + ", ";
 	}
@@ -261,6 +269,18 @@ $htmlArray
 %>
 	void setup() {
 <% 
+
+// First, check to see if there are any user defined functions with the name "setup".
+// If yes, then add call to "_setup" here.
+for (function in rappStructureService.getFunctions(rappId)) {
+	if ("setup".equals(function.name)) {
+		def functionName = rappStructureService.getNewSpecialFunctionName(function.name);
+%>		$functionName();
+		
+<%
+	}
+}
+
 for (instance in rappStructureService.getInstances(rappId)) { 
 	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 	for (property in componentModel.getAllProperties()) {
@@ -297,6 +317,17 @@ for (instance in rappStructureService.getInstances(rappId)) {
 
 	void loop() {
 <% 
+// First, check to see if there are any user defined functions with the name "loop".
+// If yes, then add call to "_loop" here.
+for (function in rappStructureService.getFunctions(rappId)) {
+	if ("loop".equals(function.name)) {
+		def functionName = rappStructureService.getNewSpecialFunctionName(function.name);
+%>		$functionName();
+		
+<%
+	}
+}
+
 for (instance in rappStructureService.getInstances(rappId)) { 
 	if(templateUtils.checkIfMethodExists(instance, platformId, "loop")) {	
 %>		${instance.name}.loop();
