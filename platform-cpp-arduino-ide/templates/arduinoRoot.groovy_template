@@ -213,7 +213,7 @@ $htmlArray
 %>			${functionCall};
 <%		}
 	}	
-%>		} else if (strcmp_P(command, PSTR("getDescriptors")) == 0) {
+%>		} else if (strcmp_P(command, PSTR("getCommands")) == 0) {
 			printCommandDescriptorsAsJson(&out);
 			out.flush();
 			return;
