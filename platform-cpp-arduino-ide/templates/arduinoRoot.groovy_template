@@ -267,13 +267,15 @@ $htmlArray
 <%		}
 	} 
 %>	
+				
+		write_P(print, PSTR("\"freeMem\": "));
+		print->print(freeRam());
+		
 		if (returnValueJson) {
 			print->print(F(",\"__RESULT\":"));
 			print->print(returnValueJson);
 		}
-		
-		write_P(print, PSTR("\"freeMem\": "));
-		print->print(freeRam());
+
 		print->print("}");
 	}
 <% 

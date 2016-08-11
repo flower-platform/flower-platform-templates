@@ -75,7 +75,7 @@
 				\$scope.statusAsArray = []; 
 				  for (var key in status) {
 					if ( status.hasOwnProperty(key) ) {
-					  if (key != "freeMem") {
+					  if (key != "freeMem" && key !=  "__RESULT") {
 						 var statusObj = {};
 						 statusObj.label = buildStatusLabel(key);
 						 statusObj.value = status[key];
@@ -88,7 +88,7 @@
 		\$interval(checkStatus, 1000);
 
 		\$scope.invoke = function(commandPath, successHandler, errorHandler) {
-			\$http.get(commandPath).success(function(response) {
+			return \$http.get(commandPath).success(function(response) {
 				\$scope.status = response;
 			});
 		}
