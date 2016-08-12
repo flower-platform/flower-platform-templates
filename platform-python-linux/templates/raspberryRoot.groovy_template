@@ -30,16 +30,6 @@ htmlCompressor.setCompressJavaScript(true);
 def minifiedcode = htmlCompressor.compress(generatedUiCode);
 def htmlArray = templateUtils.bytesToHexArray(templateUtils.gzip(minifiedcode), 512, 4);
 
-def convertDataType(type) {
-	if (type == null) {
-		return "void";
-	}
-	switch(type) {
-		case "string": return "const char*";
-		default: return type;
-	}
-}
-
 %>#!/usr/bin/python
 
 import os
@@ -69,7 +59,6 @@ class AppGen :
 <%
 //Variables
 for (var in rappStructureService.getVariables(rappId)) {
-	def varType = convertDataType(var.type);
 %>	$var.name = None
 
 <% 
@@ -105,6 +94,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 if (httpServer != null) {   /****************************************** HttpServer ************************************************/
 %>	def ${httpServer.name}_onCommandReceived(self, event) :
 		urlFound = False
+		returnValueJson = None
 		
 		if (event.url == "") :
 			event.client.send_response(200)
@@ -129,6 +119,8 @@ $htmlArray
 			functionCall += param.name + ", ";
 			if (param.type == "String") {
 %>			${param.name} = event.parameters.get("$param.name")[0]
+<%			} else if (param.type == "bool") {
+%>			${param.name} = event.parameters.get("$param.name")[0] == "true"
 <%			} else {
 %>			${param.name} = int(event.parameters.get("$param.name")[0])
 <%			}
@@ -137,10 +129,18 @@ $htmlArray
 			functionCall = functionCall[0..-3];
 		}
 		functionCall += ")"
-%>			$functionCall
-<%	}
-%>		elif (event.url == "getDescriptors") :
-			descriptors = self.getDescriptorsAsJson()
+		if (function.type == "String") {
+%>			returnValueJson = '"' + ${functionCall} + '"'
+<%		} else if (function.type == "int") {
+%>			returnValueJson = '' + ${functionCall}
+<%		} else if (function.type == "bool") {
+%>			returnValueJson = ${functionCall} ? 'true' : 'false'
+<%		} else {
+%>			${functionCall};
+<%		}
+	}
+%>		elif (event.url == "getCommands") :
+			descriptors = self.getCommandDescriptorsAsJson()
 			event.client.send_response(200)
 			event.client.send_header("Content-type", "application/json")
 			event.client.end_headers()
@@ -162,14 +162,16 @@ $htmlArray
 	for (instance in rappStructureService.getInstances(rappId)) { 
 		if (instance.getPropertyValue("contributesToState")) {
 %>		event.client.wfile.write("<%= first ? "" : "," %>%s" % (self.${instance.name}.getStateAsJson("${instance.name}")))
-<%			
+<%		
 		first = false;
 		}
 	} 
-%>		event.client.wfile.write("}")
+%>		if returnValueJson : 
+			event.client.wfile.write('<%= first ? "" : "," %>"__RESULT":%s' % returnValueJson)
+		event.client.wfile.write("}")
 	
-	def getDescriptorsAsJson(self) :
-		json = '{"commands":['
+	def getCommandDescriptorsAsJson(self) :
+		json = '['
 <%	
 	first = true;
 	for (function in rappStructureService.getFunctions(rappId)) {
@@ -184,7 +186,7 @@ $htmlArray
 <% 			first = false;
 		}
 	}
-%>		json += "]}"
+%>		json += "]"
 		return json
 
 <% 
@@ -203,7 +205,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 		if (propertyValue == null) {
 			continue;
 		}
-		if (property.type == "char") {
+		if (property.type == "String") {
 %>		self.${instance.name}.$property.name = "$propertyValue"
 <% 		} else {
 %>		self.${instance.name}.$property.name = $propertyValue
