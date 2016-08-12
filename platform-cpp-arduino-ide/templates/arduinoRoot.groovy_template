@@ -170,7 +170,7 @@ if (httpServer != null) {   /****************************************** HttpServ
 		event->server->getCommandFromUrl(event->url, command);
 		bool urlFound = false;
 		
-		char returnValueBuf[64];
+		char returnValueBuf[64] = "";
 		char *returnValueJson = NULL;
 		
 		BufferedPrint out(event->client);
