@@ -132,7 +132,7 @@ $htmlArray
 		if (function.type == "String") {
 %>			returnValueJson = '"' + ${functionCall} + '"'
 <%		} else if (function.type == "int") {
-%>			returnValueJson = '' + ${functionCall}
+%>			returnValueJson = str(${functionCall})
 <%		} else if (function.type == "bool") {
 %>			returnValueJson = ${functionCall} ? 'true' : 'false'
 <%		} else {
