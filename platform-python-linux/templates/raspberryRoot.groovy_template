@@ -198,8 +198,26 @@ $htmlArray
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
 	def componentModel = libraryService.getComponentByName(platformId, instance.type);
-%>		self.$instance.name = ${instance.type}()
-<% 
+	def constructor = componentModel.getConstructorByConstructorVariant(instance.getConstructorVariant());
+%>		self.${instance.name} = ${instance.type}(<%
+	if (constructor != null) {
+		def parameters = constructor.getParameters();
+		if (parameters != null) {
+			for (int i=0; i<parameters.size(); i++) {
+				if (i>0) {
+					%>, <%
+				}
+				def param = parameters.get(i);
+				if (param.type == "String") {
+					%>"${instance.getConstructorParameterValue(param.getName())}"<%
+				} else {
+					%>${instance.getConstructorParameterValue(param.getName())}<%
+				}
+			}
+		}
+	}
+	%>)
+<%
 	for (property in componentModel.getAllProperties()) {
 		def propertyValue = instance.getPropertyValue(property.name);
 		if (propertyValue == null) {
