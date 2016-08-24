@@ -241,16 +241,20 @@ for (instance in rappStructureService.getInstances(rappId)) {
 <% 
 }
 for (instance in rappStructureService.getInstances(rappId)) { 
+	if(templateUtils.checkIfMethodExists(instance, platformId, "setup")) {
 %>		self.${instance.name}.setup()
-<%}
+<%	}
+}
 %>
 	def start(self) :
 		self.running = True
 		while self.running :
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
+	if(templateUtils.checkIfMethodExists(instance, platformId, "loop")) {
 %>			self.${instance.name}.loop()
-<%}
+<%	}
+}
 %>			time.sleep(0.01)
 		GPIO.cleanup()
 		sys.exit(0)
@@ -258,8 +262,10 @@ for (instance in rappStructureService.getInstances(rappId)) {
 	def stop(self, signal, frame) :
 <% 
 for (instance in rappStructureService.getInstances(rappId)) { 
+	if(templateUtils.checkIfMethodExists(instance, platformId, "stop")) {
 %>		self.${instance.name}.stop()
-<%}
+<%	}
+}
 %>		self.running = False
 
 
