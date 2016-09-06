@@ -41,6 +41,12 @@
 		def htmlOutput =  htmlTemplateUtils.replacePropertiesWithValuesForEachChildNode(node.getNodeUri());	
 	%>
 	var ui = angular.module("ui", ['ui.bootstrap' <%=htmlTemplateUtils.getModulesToImportString()%> ]);
+	ui.config(['\$locationProvider', function(\$locationProvider) {
+		\$locationProvider.html5Mode({
+		  enabled: true,
+		  requireBase: false
+		});
+    }]);
 	ui.controller("RootCtrl", ['\$scope', '\$http', '\$interval', '\$location', function(\$scope, \$http, \$interval, \$location) {
 		var boardUrl = (\$location.search().boardUrl != undefined ? \$location.search().boardUrl : "");
 		var baseUrl = "";
@@ -88,7 +94,7 @@
 		\$interval(checkStatus, 1000);
 
 		\$scope.invoke = function(commandPath, successHandler, errorHandler) {
-			return \$http.get(commandPath).success(function(response) {
+			return \$http.get(\$scope.getBoardUrl(commandPath)).success(function(response) {
 				\$scope.status = response;
 			});
 		}
