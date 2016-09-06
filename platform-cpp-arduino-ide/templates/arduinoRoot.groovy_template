@@ -40,6 +40,8 @@ def anyInstanceHasConstructorVariant(instances) {
 %>#include <Arduino.h>
 #include <HardwareSerial.h>
 #include <stdbool.h>
+#include <FlowerPlatformMathManip.h>
+#include <FlowerPlatformStringManip.h>
 
 <%	import org.flowerplatform.gwt.shared.util.Pair;
 	Pair<String, String>[] imports = rappStructureService.getImports(rappId);
@@ -166,7 +168,7 @@ $code
 if (httpServer != null) {   /****************************************** HttpServer ************************************************/
 %>
 	void ${httpServer.name}_onCommandReceived(HttpCommandEvent* event) {
-		char command[32];
+		char command[64];
 		event->server->getCommandFromUrl(event->url, command);
 		bool urlFound = false;
 		
@@ -198,6 +200,8 @@ $htmlArray
 			String ${param.name} = ${param.name}Buf;
 <%			} else if (param.type == "bool") {
 %>			bool $param.name = event->server->getBoolParameterValue(event->url, "$param.name");
+<%			} else if (param.type == "double") {
+%>			double $param.name = event->server->getDoubleParameterValue(event->url, "$param.name");
 <%			} else {
 %>			int $param.name = event->server->getIntParameterValue(event->url, "$param.name");
 <%			}
@@ -217,6 +221,9 @@ $htmlArray
 <%		} else if (function.type == "bool") {
 %>			returnValueJson = returnValueBuf;
 			strcat_P(returnValueJson, ${functionCall} ? PSTR("true") : PSTR("false"));
+<%		} else if (function.type == "double") {
+%>			returnValueJson = returnValueBuf;
+			dtoa(returnValueJson, ${functionCall});
 <%		} else {
 %>			${functionCall};
 <%		}
