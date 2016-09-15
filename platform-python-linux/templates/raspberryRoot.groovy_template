@@ -37,6 +37,8 @@ import signal
 import sys
 import time
 import RPi.GPIO as GPIO
+from math import sqrt, sin, cos, tan, asin, acos, atan, atan2, degrees, radians, log, exp, ceil, floor
+from random import random, randint
 
 <%	
 	import org.flowerplatform.gwt.shared.util.Pair;
@@ -121,6 +123,8 @@ $htmlArray
 %>			${param.name} = event.parameters.get("$param.name")[0]
 <%			} else if (param.type == "bool") {
 %>			${param.name} = event.parameters.get("$param.name")[0] == "true"
+<%			} else if (param.type == "double") {
+%>			${param.name} = float(event.parameters.get("$param.name")[0])
 <%			} else {
 %>			${param.name} = int(event.parameters.get("$param.name")[0])
 <%			}
@@ -131,7 +135,7 @@ $htmlArray
 		functionCall += ")"
 		if (function.type == "String") {
 %>			returnValueJson = '"' + ${functionCall} + '"'
-<%		} else if (function.type == "int") {
+<%		} else if (function.type == "int" || function.type == "double" ) {
 %>			returnValueJson = str(${functionCall})
 <%		} else if (function.type == "bool") {
 %>			returnValueJson = ${functionCall} ? 'true' : 'false'
