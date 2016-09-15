@@ -20,7 +20,7 @@ def componentsNode = nodeService.navigateByType(node.nodeUri, ['componentsRoot']
 def uiRepoName = node.getPropertyValue("uiRepository");
 def uiRepoRootNode = MainModelNature.getMainModel(uiRepoName);
 def componentsRootNodeOfUiRepo = nodeService.navigateByType(uiRepoRootNode.nodeUri, [CoreNodeConstants.TYPE_COMPONENTS_ROOT]);
-def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, CoreConstants.DEFAULT, false, null)[0].content;
+def generatedUiCode = templateGenerationService.generateFiles(componentsRootNodeOfUiRepo.nodeUri, userId, CoreConstants.DEFAULT, false, null)[0].content;
 htmlCompressor.setCompressCss(true);               
 htmlCompressor.setCompressJavaScript(true);
 def minifiedcode = htmlCompressor.compress(generatedUiCode);
@@ -57,6 +57,7 @@ public:
 <%
 def httpServer = null;
 def instances = rappStructureService.getInstances(rappId);
+templateUtils.processMacros(instances, userId, rappId);
 
 // Components declaration
 for (instance in instances) { 
@@ -150,7 +151,7 @@ $code
 }
 
 // Event handlers
-for (instance in rappStructureService.getInstances(rappId)) { 
+for (instance in instances) { 
 	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 	for (eventHandler in instance.eventHandlers) {
 	def code = null;
@@ -267,7 +268,7 @@ $htmlArray
 	void printStateAsJson(Print* print, const char* returnValueJson) {
 		print->print(F("{"));
 <%		
-	for (instance in rappStructureService.getInstances(rappId)) { 
+	for (instance in instances) { 
 		if (instance.getPropertyValue("contributesToState")) {
 %>		${instance.name}.printStateAsJson(F("${instance.name}"), print);
 		print->print(F(","));
@@ -302,7 +303,7 @@ for (function in rappStructureService.getFunctions(rappId)) {
 	}
 }
 
-for (instance in rappStructureService.getInstances(rappId)) { 
+for (instance in instances) { 
 	def componentModel = libraryService.getComponentByName(platformId, instance.type);
 	for (property in componentModel.getAllProperties()) {
 		def propertyValue = instance.getPropertyValue(property.name);
@@ -329,7 +330,7 @@ for (instance in rappStructureService.getInstances(rappId)) {
 <% 
 }
 
-for (instance in rappStructureService.getInstances(rappId)) { 
+for (instance in instances) { 
 	if(templateUtils.checkIfMethodExists(instance, platformId, "setup")) {
 %>		${instance.name}.setup();
 <%	}
@@ -349,7 +350,7 @@ for (function in rappStructureService.getFunctions(rappId)) {
 	}
 }
 
-for (instance in rappStructureService.getInstances(rappId)) { 
+for (instance in instances) { 
 	if(templateUtils.checkIfMethodExists(instance, platformId, "loop")) {	
 %>		${instance.name}.loop();
 <%	}
